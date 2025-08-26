@@ -1,73 +1,146 @@
-# Welcome to your Lovable project
+# 🎯 Coach IA Sorare
 
-## Project info
+Application web pour analyser vos cartes Sorare et optimiser votre stratégie fantasy football.
 
-**URL**: https://lovable.dev/projects/2aac9de7-73a5-40a6-b0db-432883ae8da3
+## 🚀 Fonctionnalités
 
-## How can I edit this code?
+### ✅ Implémentées
+- **Recherche de cartes** : Entrez votre slug Sorare pour voir toutes vos cartes
+- **Base de données locale** : Sauvegarde automatique des informations clés (playerId, position, rarity, xp, season)
+- **Métriques de performance** : Calcul automatique des métriques L5, L15, L40 et DNP%
+- **GameWeeks Sorare** : Récupération des vraies GameWeeks avec compétitions et divisions
+- **Interface moderne** : Design responsive avec filtres et tri
+- **Proxy API** : Contournement des restrictions CORS
 
-There are several ways of editing your application.
+### 📊 Métriques calculées
+- **L5** : Moyenne des scores sur les 5 derniers matchs
+- **L15** : Moyenne des scores sur les 15 derniers matchs  
+- **L40** : Moyenne des scores sur les 40 derniers matchs
+- **DNP%** : Pourcentage de matchs où le joueur n'a pas joué
+- **Score attendu** : Calcul basé sur L15 + bonus disponibilité
 
-**Use Lovable**
+### 🏆 Compétitions supportées
+- **All-Star** : Compétition principale avec les meilleures récompenses
+- **Champion** : Compétition pour les meilleurs joueurs
+- **Under 23** : Compétition pour joueurs de moins de 23 ans
+- **Arena** : Compétition spéciale
+- **Arena Uncapped** : Compétition sans limite
+- **Toutes les ligues** : Premier League, LALIGA, Bundesliga, Ligue 1, etc.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2aac9de7-73a5-40a6-b0db-432883ae8da3) and start prompting.
+## 🛠️ Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Cloner le projet
+git clone <repository>
+cd sorare-card-coach
 
-**Use your preferred IDE**
+# Installer les dépendances
+npm install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# Démarrer le serveur backend
+npm run server
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Dans un autre terminal, démarrer le frontend
 npm run dev
+
+# Ou démarrer les deux en même temps
+npm run dev:full
 ```
 
-**Edit a file directly in GitHub**
+## 📁 Structure du projet
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── components/          # Composants React
+│   ├── cards-table.tsx  # Tableau des cartes avec métriques
+│   ├── performance-metrics.tsx  # Affichage des performances
+│   ├── gameweeks-simple.tsx  # Affichage des GameWeeks
+│   └── ...
+├── lib/
+│   └── sorare-api.ts    # API Sorare avec proxy
+├── types/
+│   └── sorare.ts        # Types TypeScript
+└── pages/
+    └── Index.tsx        # Page principale
 
-**Use GitHub Codespaces**
+server.cjs              # Serveur backend Express
+sorare-cards.db         # Base de données SQLite
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🗄️ Base de données
 
-## What technologies are used for this project?
+### Table `cards`
+- `id` : ID unique de la carte
+- `slug` : Slug de la carte
+- `playerId` : ID du joueur
+- `displayName` : Nom du joueur
+- `position` : Position (Attaquant, Milieu, Défenseur, Gardien)
+- `rarity` : Rareté (Limited, Rare, Super Rare, Unique)
+- `xp` : Points d'expérience
+- `season` : Saison
+- `lastUpdated` : Date de dernière mise à jour
 
-This project is built with:
+### Table `player_performances`
+- `playerId` : ID du joueur
+- `displayName` : Nom du joueur
+- `position` : Position
+- `l5`, `l15`, `l40` : Moyennes de scores
+- `dnpPercentage` : Pourcentage de non-participation
+- `gamesPlayed` : Nombre de matchs joués
+- `totalGames` : Nombre total de matchs
+- `lastUpdated` : Date de dernière mise à jour
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔧 API Endpoints
 
-## How can I deploy this project?
+### Backend (port 3001)
+- `GET /api/stats` : Statistiques de la base de données
+- `GET /api/cards` : Toutes les cartes
+- `GET /api/performances` : Toutes les performances
+- `GET /api/performance/:playerId` : Performance d'un joueur
+- `POST /api/cards` : Sauvegarder une carte
+- `POST /api/performances` : Sauvegarder une performance
+- `POST /api/sorare` : Proxy vers l'API Sorare
 
-Simply open [Lovable](https://lovable.dev/projects/2aac9de7-73a5-40a6-b0db-432883ae8da3) and click on Share -> Publish.
+## 🎯 Utilisation
 
-## Can I connect a custom domain to my Lovable project?
+1. **Démarrer l'application** : `npm run dev:full`
+2. **Ouvrir** : http://localhost:8080
+3. **Voir les GameWeeks** : Les GameWeeks s'affichent automatiquement en haut
+4. **Rechercher vos cartes** : Entrer votre slug (ex: `emiliodelamuerte`)
+5. **Analyser** : Voir vos cartes avec métriques et performances
+6. **Charger les performances** : Cliquer sur "Charger perf" pour chaque joueur
 
-Yes, you can!
+## 🏆 Compétitions MVP
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Données réelles de l'API Sorare
+- **All-Star** : Compétition principale
+- **Champion** : Compétition pour les meilleurs
+- **Under 23** : Compétition pour joueurs U23
+- **Arena** : Compétition spéciale
+- **Toutes les ligues** : Premier League, LALIGA, Bundesliga, etc.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Informations affichées
+- **Statut** : Ouvert, en cours, fermé
+- **Dates** : Période de la GameWeek
+- **Compétitions** : Toutes les compétitions disponibles
+- **Divisions** : Division 1, 2, 3, 4
+- **Raretés** : Limited, Rare, Super Rare, Unique
+- **Actions** : Boutons pour analyser vos cartes
+
+## 🔮 Prochaines étapes
+
+- [ ] Optimisation automatique des lineups
+- [ ] Remplacement automatique en cas de DNP
+- [ ] Recommandations d'achat
+- [ ] Intégration des bonus XP et capitaine
+- [ ] Analyse de compatibilité cartes/GameWeeks
+
+## 🛡️ Sécurité
+
+- Proxy local pour contourner les CORS
+- Base de données locale (pas de données sensibles envoyées)
+- Validation des données côté serveur
+
+## 📝 Licence
+
+MIT

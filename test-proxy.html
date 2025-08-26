@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Proxy Sorare</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 10px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Test Proxy Sorare</h1>
+    <input type="text" id="slug" placeholder="Slug Sorare" value="emiliodelamuerte">
+    <button onclick="testProxy()">Tester le Proxy</button>
+    <div id="result" class="result"></div>
+
+    <script>
+        async function testProxy() {
+            const slug = document.getElementById('slug').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = 'Chargement...';
+            
+            try {
+                const response = await fetch('/api/sorare', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            query MyCards($slug: String!) {
+                                user(slug: $slug) {
+                                    id
+                                    slug
+                                    nickname
+                                    cards(first: 20, sport: FOOTBALL, owned: true) {
+                                        nodes {
+                                            ... on Card {
+                                                id
+                                                slug
+                                                rarity
+                                                xp
+                                                player {
+                                                    displayName
+                                                    position
+                                                    age
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        `,
+                        variables: { slug: slug.trim() }
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.errors) {
+                    resultDiv.innerHTML = `<strong>Erreur:</strong> ${JSON.stringify(data.errors, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<strong>Succès!</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>Erreur:</strong> ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
+
