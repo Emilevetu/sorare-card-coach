@@ -263,6 +263,309 @@ export function Rules() {
             </CardContent>
           </Card>
 
+          {/* 8. Règles par compétition */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Trophy className="w-6 h-6 text-sorare-blue" />
+                8. Règles par compétition (Sorare 26)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              
+              {/* Arena */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  🎮 Arena
+                </h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <h4 className="font-semibold mb-3">Règles générales</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>• <strong>Format :</strong> SO5 (5 cartes dont 1 capitaine)</li>
+                    <li>• <strong>Capitaine :</strong> +20%</li>
+                    <li>• <strong>Entrées :</strong> illimitées</li>
+                    <li>• <strong>Matchmaking :</strong> arènes de 10 managers</li>
+                    <li>• <strong>Golden Arena :</strong> 5% des arènes → podiums boostés</li>
+                    <li>• <strong>Récompenses :</strong> Essence (type selon rareté jouée)</li>
+                  </ul>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+                    <h4 className="font-semibold mb-3 text-green-700">Arena Capped</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Cap :</strong> somme L15 ≤ 260 (Common = 280)</li>
+                      <li>• <strong>Bonus lineup :</strong> désactivés (pas de Cap Bonus, pas de Multi-Club)</li>
+                      <li>• <strong>Coût entrée :</strong> 100 Essence (250 en Common)</li>
+                      <li>• <strong>Récompenses :</strong> Essence selon rareté, barème fixe par arène</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+                    <h4 className="font-semibold mb-3 text-blue-700">Arena Uncapped</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Cap :</strong> aucun</li>
+                      <li>• <strong>Bonus lineup :</strong> activés (Cap Bonus, Multi-Club)</li>
+                      <li>• <strong>Coût entrée :</strong> 250 Essence</li>
+                      <li>• <strong>Récompenses :</strong> Essence selon rareté</li>
+                      <li>• <strong>Standard :</strong> 1er ~1250, 2e ~600, 3e ~400, 4e ~1000, 5e ~500</li>
+                      <li>• <strong>Golden :</strong> 1er 3750, 2e 1500, 3e 750</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Top 5 Leagues */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-center bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                  🏆 Top 5 Leagues (In-Season)
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  
+                  {/* Premier League */}
+                  <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/20">
+                    <h4 className="font-semibold mb-3 text-red-700 flex items-center gap-2">
+                      🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs Premier League uniquement</li>
+                      <li>• <strong>Composition :</strong> min. 4 cartes In-Season (25/26) + max 1 Classique</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Divisions :</strong> D1, D2, D3 pour Limited et Rare</li>
+                      <li>• <strong>Hot Streak :</strong> actif (seuils ~360 Limited, 400 Rare, boost x2)</li>
+                      <li>• <strong>Récompenses :</strong> cash + Essence</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, Super Rare +40%, Unique +10% (en SR Extra)</li>
+                    </ul>
+                  </div>
+
+                  {/* Ligue 1 */}
+                  <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+                    <h4 className="font-semibold mb-3 text-blue-700 flex items-center gap-2">
+                      🇫🇷 Ligue 1
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs Ligue 1 uniquement</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> actif (360 Limited, 400 Rare, boost x2)</li>
+                      <li>• <strong>Récompenses :</strong> cash + Essence</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, Super Rare +40% (1 Unique Classic autorisée en extra)</li>
+                    </ul>
+                  </div>
+
+                  {/* LaLiga */}
+                  <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                    <h4 className="font-semibold mb-3 text-yellow-700 flex items-center gap-2">
+                      🇪🇸 LaLiga EA SPORTS
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> uniquement joueurs de LaLiga</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> actif (360 Limited, 400 Rare, boost x2)</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40%, Unique +10% (extra SR)</li>
+                    </ul>
+                  </div>
+
+                  {/* Bundesliga */}
+                  <div className="bg-red-600/10 rounded-lg p-4 border border-red-600/20">
+                    <h4 className="font-semibold mb-3 text-red-600 flex items-center gap-2">
+                      🇩🇪 Bundesliga
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs Bundesliga uniquement</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Divisions :</strong> D1, D2, D3 pour Limited & Rare</li>
+                      <li>• <strong>Hot Streak :</strong> actif (360 Limited, 400 Rare, boost x2)</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40%, Unique +10% (extra SR)</li>
+                    </ul>
+                  </div>
+
+
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Other Leagues */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-center bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                  ⚽ Autres Ligues (In-Season)
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {/* Jupiler Pro League */}
+                  <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/20">
+                    <h4 className="font-semibold mb-3 text-red-700 flex items-center gap-2">
+                      🇧🇪 Jupiler Pro League
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs de la Jupiler (Belgique)</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> actif</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40%, Unique autorisée en extra SR</li>
+                    </ul>
+                  </div>
+
+                  {/* Eredivisie */}
+                  <div className="bg-orange-500/10 rounded-lg p-4 border border-orange-500/20">
+                    <h4 className="font-semibold mb-3 text-orange-700 flex items-center gap-2">
+                      🇳🇱 Eredivisie
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs Eredivisie</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> 360 Limited, 400 Rare, boost x2</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40% (+1 Unique Classic possible en extra)</li>
+                    </ul>
+                  </div>
+
+                  {/* MLS */}
+                  <div className="bg-blue-600/10 rounded-lg p-4 border border-blue-600/20">
+                    <h4 className="font-semibold mb-3 text-blue-600 flex items-center gap-2">
+                      🇺🇸 MLS
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <h5 className="font-medium mb-2">MLS In-Season</h5>
+                        <ul className="space-y-1 text-sm">
+                          <li>• <strong>Format :</strong> SO5 (min. 4 In-Season)</li>
+                          <li>• <strong>Éligibilité :</strong> joueurs MLS</li>
+                          <li>• <strong>Capitaine :</strong> +50%</li>
+                          <li>• <strong>Hot Streak :</strong> actif (Limited, Rare)</li>
+                          <li>• <strong>Récompenses :</strong> cash + Essence</li>
+                          <li>• <strong>SR & Unique :</strong> modes spécifiques avec Golden Goal (seuils 600+ SR, 650+ Unique → jackpot partagé)</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">MLS Classic</h5>
+                        <ul className="space-y-1 text-sm">
+                          <li>• <strong>Format :</strong> SO5</li>
+                          <li>• <strong>Éligibilité :</strong> MLS</li>
+                          <li>• <strong>Récompenses :</strong> cartes + Essence (pas de cash)</li>
+                          <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +20%, Unique +40%</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Challenger & Contender */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  🌍 Compétitions Internationales
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {/* Challenger */}
+                  <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
+                    <h4 className="font-semibold mb-3 text-purple-700 flex items-center gap-2">
+                      🌍 Challenger (In-Season)
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> ligues suivantes :</li>
+                      <li className="ml-4">Primeira Liga (Portugal), Süper Lig (Turquie), Danish Superliga, Austrian Bundesliga, Scottish Premiership, Serie A</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> 360 Limited, 400 Rare, boost x2</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40%, Unique autorisée en extra SR</li>
+                    </ul>
+                  </div>
+
+                  {/* Contender */}
+                  <div className="bg-pink-500/10 rounded-lg p-4 border border-pink-500/20">
+                    <h4 className="font-semibold mb-3 text-pink-700 flex items-center gap-2">
+                      🌍 Contender (In-Season)
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO5</li>
+                      <li>• <strong>Éligibilité :</strong> ligues hors Top 5 + Challenger</li>
+                      <li className="ml-4">Ex. Brésil Série A, Liga MX, Argentine, Russie, Croatie, Suisse, J1 League, K League, Championship, etc.</li>
+                      <li>• <strong>Composition :</strong> min. 4 In-Season</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Hot Streak :</strong> actif</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +40% (+1 Unique Classic autorisée en extra SR)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Classic Competitions */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-center bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                  🌟 Compétitions Classiques (SO7)
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  
+                  {/* Champion Europe */}
+                  <div className="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                    <h4 className="font-semibold mb-3 text-yellow-700 flex items-center gap-2">
+                      🌍 Champion Europe (Classic)
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO7 (jusqu'à 7 cartes)</li>
+                      <li>• <strong>Éligibilité :</strong> Top 5 ligues uniquement</li>
+                      <li className="ml-4">PL, Bundesliga, LaLiga, Ligue 1, Serie A</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +20%, Unique +40%</li>
+                      <li>• <strong>Récompenses :</strong> cartes (Star/Tier) + Essence</li>
+                    </ul>
+                  </div>
+
+                  {/* U23 */}
+                  <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+                    <h4 className="font-semibold mb-3 text-green-700 flex items-center gap-2">
+                      👶 U23 (Classic)
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO7</li>
+                      <li>• <strong>Éligibilité :</strong> joueurs ≤ 23 ans au 1er juillet 2025</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +20%, Unique +40%</li>
+                      <li>• <strong>Récompenses :</strong> cartes + Essence</li>
+                    </ul>
+                  </div>
+
+                  {/* All-Star */}
+                  <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
+                    <h4 className="font-semibold mb-3 text-purple-700 flex items-center gap-2">
+                      🌟 All-Star (Classic)
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Format :</strong> SO7</li>
+                      <li>• <strong>Éligibilité :</strong> toutes ligues</li>
+                      <li>• <strong>Capitaine :</strong> +50%</li>
+                      <li>• <strong>Bonus rareté :</strong> Rare +10%, SR +20%, Unique +40%</li>
+                      <li>• <strong>Récompenses :</strong> cartes (Star, Tier) + Essence</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Format synthétique */}
           <Card className="bg-gradient-to-r from-sorare-blue/10 to-sorare-purple/10 border-sorare-blue/20">
             <CardHeader>
