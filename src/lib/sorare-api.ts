@@ -25,13 +25,19 @@ const CARDS_QUERY = `
             player {
               id
               position
-              displayName
-              age
+              activeClub {
+                name
+                domesticLeague {
+                  name
+                }
+              }
               lastFifteenSo5Appearances
               avgAsDef: averageScore(position: Defender, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
               avgAsMid: averageScore(position: Midfielder, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
               avgAsFwd: averageScore(position: Forward, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
               avgAsGK: averageScore(position: Goalkeeper, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
+              displayName
+              age
             }
           }
         }

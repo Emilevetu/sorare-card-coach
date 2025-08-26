@@ -215,7 +215,10 @@ const Index = () => {
 
       // Calculer automatiquement les performances à partir des données des cartes
       const cardsWithPerf: CardWithPerformance[] = [];
+      console.log('🔍 Traitement de', data.user.cards.nodes.length, 'cartes');
+      
       for (const card of data.user.cards.nodes) {
+        console.log('🔍 Traitement carte:', card.player.displayName, '- Rareté:', card.rarity);
         const performance = calculatePlayerPerformanceFromCard(card);
         cardsWithPerf.push({
           ...card,
@@ -226,6 +229,7 @@ const Index = () => {
       // Debug: afficher les raretés pour diagnostiquer le problème
       console.log('🔍 Raretés des cartes récupérées:', data.user.cards.nodes.map(card => card.rarity));
       console.log('📊 Cartes avec performances:', cardsWithPerf.map(card => ({ name: card.player.displayName, rarity: card.rarity })));
+      console.log('✅ Nombre final de cartes avec performances:', cardsWithPerf.length);
 
       setCardsWithPerformance(cardsWithPerf);
 
@@ -263,9 +267,14 @@ const Index = () => {
 
   // Calculer les ligues et saisons disponibles
   const availableLeagues = useMemo(() => {
-    // Temporairement désactivé pour réduire la complexité
-    return [];
-  }, []);
+    const leagues = new Set<string>();
+    cardsWithPerformance.forEach(card => {
+      if (card.player.activeClub?.domesticLeague?.name) {
+        leagues.add(card.player.activeClub.domesticLeague.name);
+      }
+    });
+    return Array.from(leagues).sort();
+  }, [cardsWithPerformance]);
 
   const availableSeasons = useMemo(() => {
     const seasons = new Set<string>();
@@ -276,9 +285,16 @@ const Index = () => {
   }, [cardsWithPerformance]);
 
   const filteredAndSortedCards = useMemo(() => {
-    if (!cardsWithPerformance.length) return [];
+    console.log('🔍 Debug filteredAndSortedCards - Nombre de cartes:', cardsWithPerformance.length);
+    console.log('🔍 Debug - Filtres actuels:', { searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter });
+    
+    if (!cardsWithPerformance.length) {
+      console.log('❌ Aucune carte avec performance');
+      return [];
+    }
 
     let filtered = cardsWithPerformance;
+    console.log('🔍 Cartes avant filtrage:', filtered.length);
 
     // Filter by search term
     if (searchTerm) {
@@ -310,13 +326,13 @@ const Index = () => {
       });
     }
 
-    // Filter by league (temporairement désactivé)
-    // if (leagueFilter !== 'All') {
-    //   filtered = filtered.filter(card => {
-    //     const league = card.player.activeClub?.domesticLeague?.name || card.player.activeNationalTeam?.officialName;
-    //     return league === leagueFilter;
-    //   });
-    // }
+    // Filter by league
+    if (leagueFilter !== 'All') {
+      filtered = filtered.filter(card => {
+        const league = card.player.activeClub?.domesticLeague?.name;
+        return league === leagueFilter;
+      });
+    }
 
     // Filter by season
     if (seasonFilter !== 'All') {
@@ -346,9 +362,8 @@ const Index = () => {
           bValue = b.player.age;
           break;
         case 'league':
-          // Temporairement désactivé
-          aValue = '';
-          bValue = '';
+          aValue = a.player.activeClub?.domesticLeague?.name || '';
+          bValue = b.player.activeClub?.domesticLeague?.name || '';
           break;
         case 'rarity':
           aValue = a.rarity;
@@ -376,10 +391,12 @@ const Index = () => {
       }
     });
 
+    console.log('🔍 Cartes après filtrage et tri:', filtered.length);
     return filtered;
-  }, [searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter, sortField, sortDirection]);
+  }, [cardsWithPerformance, searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter, sortField, sortDirection]);
 
   const cardStats = useMemo(() => {
+    console.log('📊 Debug cardStats - Nombre de cartes:', cardsWithPerformance.length);
     if (!cardsWithPerformance.length) return { total: 0, limited: 0, rare: 0 };
 
     const total = cardsWithPerformance.length;
@@ -388,8 +405,9 @@ const Index = () => {
       ['rare', 'super rare', 'unique'].includes(card.rarity.toLowerCase())
     ).length;
 
+    console.log('📊 Stats calculées:', { total, limited, rare });
     return { total, limited, rare };
-  }, []);
+  }, [cardsWithPerformance]);
 
   return (
     <div className="min-h-screen bg-background">

@@ -81,7 +81,7 @@ export function CardsFilters({
       <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtres</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Rareté</label>
             <Select value={rarityFilter} onValueChange={onRarityChange}>
@@ -127,6 +127,23 @@ export function CardsFilters({
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Ligue</label>
+            <Select value={leagueFilter} onValueChange={onLeagueChange}>
+              <SelectTrigger className="h-11 border-gray-200/50 bg-white/50 hover:bg-white rounded-xl">
+                <SelectValue placeholder="Toutes ligues" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Toutes ligues</SelectItem>
+                {availableLeagues.map((league) => (
+                  <SelectItem key={league} value={league}>
+                    {league}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="mt-4">
@@ -153,7 +170,7 @@ export function CardsFilters({
       <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Trier par</h3>
         
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           <Button
             variant="outline"
             size="sm"
@@ -217,6 +234,19 @@ export function CardsFilters({
             }`}
           >
             DNP% {sortField === 'dnp' && (sortDirection === 'desc' ? '↓' : '↑')}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onSortChange('league')}
+            className={`h-10 justify-start text-sm rounded-xl border-gray-200/50 ${
+              sortField === 'league' 
+                ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                : 'bg-white/50 hover:bg-white'
+            }`}
+          >
+            Ligue {sortField === 'league' && (sortDirection === 'desc' ? '↓' : '↑')}
           </Button>
         </div>
       </div>

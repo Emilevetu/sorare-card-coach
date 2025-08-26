@@ -9,16 +9,12 @@ export interface SorarePlayer {
   avgAsMid?: number;
   avgAsFwd?: number;
   avgAsGK?: number;
-  // Temporairement supprimé pour réduire la complexité de la requête
-  // activeClub?: {
-  //   name: string;
-  //   domesticLeague?: {
-  //     name: string;
-  //   };
-  // };
-  // activeNationalTeam?: {
-  //   officialName: string;
-  // };
+  activeClub?: {
+    name: string;
+    domesticLeague?: {
+      name: string;
+    };
+  };
   u23Eligible: boolean;
 }
 

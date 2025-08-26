@@ -43,6 +43,9 @@ function getTrendIcon(l5: number, l15: number) {
 }
 
 export function CardsTable({ cards }: CardsTableProps) {
+  console.log('🎯 CardsTable reçoit', cards.length, 'cartes');
+  console.log('🎯 Première carte:', cards[0]);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 12;
   const totalPages = Math.ceil(cards.length / cardsPerPage);
@@ -75,9 +78,8 @@ export function CardsTable({ cards }: CardsTableProps) {
               <TableHead className="font-semibold text-gray-900 py-4">Joueur</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Position</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Âge</TableHead>
-              {/* Temporairement supprimé pour réduire la complexité */}
-              {/* <TableHead className="font-semibold">Club</TableHead> */}
-              {/* <TableHead className="font-semibold">Ligue</TableHead> */}
+              <TableHead className="font-semibold text-gray-900 py-4">Club</TableHead>
+              <TableHead className="font-semibold text-gray-900 py-4">Ligue</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Rareté</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4 text-right">XP</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Saison</TableHead>
@@ -91,13 +93,12 @@ export function CardsTable({ cards }: CardsTableProps) {
                 <TableCell className="font-medium">{card.player.displayName}</TableCell>
                 <TableCell>{card.player.position}</TableCell>
                 <TableCell>{card.player.age}</TableCell>
-                {/* Temporairement supprimé pour réduire la complexité */}
-                {/* <TableCell>
-                  {card.player.activeClub?.name || card.player.activeNationalTeam?.officialName || '—'}
+                <TableCell>
+                  {card.player.activeClub?.name || '—'}
                 </TableCell>
                 <TableCell>
                   {card.player.activeClub?.domesticLeague?.name || '—'}
-                </TableCell> */}
+                </TableCell>
                 <TableCell>
                   <Badge className={getRarityBadgeVariant(card.rarity)}>
                     {card.rarity}
