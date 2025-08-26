@@ -2,9 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+const OpenAI = require('openai');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -43,6 +45,18 @@ db.exec(`
     lastUpdated TEXT NOT NULL
   )
 `);
+
+// Configuration OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
+});
+
+// Configuration du modèle
+const MODEL_CONFIG = {
+  model: 'gpt-4',
+  temperature: 0.7,
+  max_tokens: 1000,
+};
 
 // Routes API
 app.get('/api/stats', (req, res) => {
@@ -122,21 +136,58 @@ app.post('/api/performances', (req, res) => {
   }
 });
 
-// Proxy vers l'API Sorare
+// Endpoint pour les appels OpenAI
+app.post('/api/openai', async (req, res) => {
+  try {
+    const { userMessage, conversationHistory, systemPrompt } = req.body;
+
+    // Construire les messages avec le système prompt et l'historique
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...conversationHistory,
+      { role: 'user', content: userMessage }
+    ];
+
+    const response = await openai.chat.completions.create({
+      model: MODEL_CONFIG.model,
+      messages: messages,
+      temperature: MODEL_CONFIG.temperature,
+      max_tokens: MODEL_CONFIG.max_tokens,
+    });
+
+    const aiResponse = response.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
+    
+    res.json({ response: aiResponse });
+  } catch (error) {
+    console.error('Erreur OpenAI:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de l\'appel à l\'API OpenAI',
+      details: error.message 
+    });
+  }
+});
+
+// Endpoint pour l'API Sorare
 app.post('/api/sorare', async (req, res) => {
   try {
+    const { query, variables } = req.body;
+
     const response = await fetch('https://api.sorare.com/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify({
+        query,
+        variables: variables || {}
+      }),
     });
 
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de l\'appel à l\'API Sorare:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'appel à l\'API Sorare' });
   }
 });
 

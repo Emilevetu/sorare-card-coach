@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { callOpenAI, ChatMessage } from '@/lib/openai-config';
 
 interface Message {
   id: string;
@@ -22,6 +23,7 @@ export function AICoachTest() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -37,17 +39,50 @@ export function AICoachTest() {
     setInputValue('');
     setIsLoading(true);
 
-    // Simulation d'une réponse IA
-    setTimeout(() => {
+    try {
+      // Ajouter le message utilisateur à l'historique
+      const newUserChatMessage: ChatMessage = {
+        role: 'user',
+        content: inputValue
+      };
+      
+      const updatedHistory = [...conversationHistory, newUserChatMessage];
+      setConversationHistory(updatedHistory);
+
+      // Appeler l'API OpenAI
+      const aiResponse = await callOpenAI(inputValue, updatedHistory);
+
+      // Ajouter la réponse de l'IA à l'historique
+      const newAIChatMessage: ChatMessage = {
+        role: 'assistant',
+        content: aiResponse
+      };
+      
+      setConversationHistory([...updatedHistory, newAIChatMessage]);
+
+      // Ajouter la réponse à l'affichage
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: `Merci pour votre message : "${inputValue}". Je suis en cours de développement pour vous fournir des recommandations personnalisées sur vos cartes Sorare.`,
+        text: aiResponse,
         isUser: false,
         timestamp: new Date()
       };
+      
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Erreur lors de l\'appel OpenAI:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Désolé, une erreur s\'est produite lors de la communication avec l\'IA. Veuillez réessayer.',
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -60,9 +95,26 @@ export function AICoachTest() {
   return (
     <Card className="w-full h-[500px] flex flex-col">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          💬 Mon Coach Test
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            💬 Mon Coach Test
+          </CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setMessages([{
+                id: '1',
+                text: 'Bonjour ! Je suis votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
+                isUser: false,
+                timestamp: new Date()
+              }]);
+              setConversationHistory([]);
+            }}
+          >
+            Effacer l'historique
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col p-4 pt-0">
