@@ -11,6 +11,7 @@ import { PerformanceMetrics } from '../components/performance-metrics';
 import { GameWeeksSimple } from '../components/gameweeks-simple';
 import { Navigation } from '../components/navigation';
 import { AICoach } from '../components/ai-coach';
+import { AICoachTest } from '../components/ai-coach-test';
 
 const Index = () => {
   const [user, setUser] = useState<SorareUser | null>(null);
@@ -367,8 +368,17 @@ const Index = () => {
             <h2 className="text-2xl font-bold">Mon Coach</h2>
             <AICoach gameWeeks={gameWeeks} />
           </div>
+
+          {/* Mon Coach Test Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Mon Coach Test</h2>
+            <AICoachTest />
+          </div>
         </div>
       </div>
+
+      {/* Espace en bas pour que la dernière section soit visible au milieu */}
+      <div className="h-32"></div>
     </div>
   );
 };
