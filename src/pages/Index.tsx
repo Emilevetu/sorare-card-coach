@@ -10,6 +10,7 @@ import { ErrorMessage } from '../components/error-message';
 import { PerformanceMetrics } from '../components/performance-metrics';
 import { GameWeeksSimple } from '../components/gameweeks-simple';
 import { Navigation } from '../components/navigation';
+import { AICoach } from '../components/ai-coach';
 
 const Index = () => {
   const [user, setUser] = useState<SorareUser | null>(null);
@@ -359,6 +360,12 @@ const Index = () => {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* Mon Coach Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Mon Coach</h2>
+            <AICoach gameWeeks={gameWeeks} />
           </div>
         </div>
       </div>
