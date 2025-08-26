@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
-const { createClient } = require('@supabase/supabase-js');
 const OpenAI = require('openai');
 
 const app = express();
