@@ -46,30 +46,7 @@ const CARDS_QUERY = `
   }
 `;
 
-const PLAYER_PERFORMANCE_QUERY = `
-  query PlayerPerformance($playerId: String!) {
-    player(id: $playerId) {
-      id
-      displayName
-      position
-      allSo5Scores(first: 40) {
-        nodes {
-          score
-          game {
-            date
-          }
-        }
-      }
-      allSo5Appearances(first: 40) {
-        nodes {
-          game {
-            date
-          }
-        }
-      }
-    }
-  }
-`;
+
 
 const GAMEWEEKS_QUERY = `
   query GameWeeks {
@@ -107,14 +84,11 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
     throw new Error('Le slug Sorare est requis');
   }
 
-  console.log('🔍 Début de la requête pour le slug:', slug);
-  console.log('📡 URL de l\'API:', SORARE_API_URL);
-
   try {
     let allCards: import('../types/sorare').SorareCard[] = [];
     let hasNextPage = true;
     let after: string | null = null;
-    const pageSize = 20; // Récupérer 20 cartes par page pour réduire la complexité
+    const pageSize = 20;
     let userData: { id: string; slug: string; nickname: string } | null = null;
 
     while (hasNextPage) {
@@ -127,8 +101,6 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
         },
       };
 
-      console.log('📤 Corps de la requête:', JSON.stringify(requestBody, null, 2));
-
       const response = await fetch(SORARE_API_URL, {
         method: 'POST',
         headers: {
@@ -137,19 +109,14 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
         body: JSON.stringify(requestBody),
       });
 
-      console.log('📥 Statut de la réponse:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ Erreur HTTP:', response.status, errorText);
         throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
       }
 
       const json: PaginatedSorareApiResponse = await response.json();
-      console.log('📦 Réponse JSON reçue');
 
       if (json.errors && json.errors.length > 0) {
-        console.error('❌ Erreurs API:', json.errors);
         throw new Error(json.errors[0]?.message || 'Erreur API Sorare');
       }
 
@@ -169,19 +136,11 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
       // Ajouter les cartes de cette page à la liste totale
       const pageCards = json.data.user.cards.nodes;
       allCards = allCards.concat(pageCards);
-      
-      console.log('📊 Cartes récupérées sur cette page:', pageCards.length);
-      console.log('📊 Total des cartes récupérées:', allCards.length);
 
       // Mettre à jour les informations de pagination
       hasNextPage = json.data.user.cards.pageInfo.hasNextPage;
       after = json.data.user.cards.pageInfo.endCursor;
-
-      console.log('🔄 Pagination - hasNextPage:', hasNextPage, 'endCursor:', after);
     }
-
-    console.log('✅ Utilisateur trouvé:', userData.nickname);
-    console.log('📊 Nombre total de cartes récupérées:', allCards.length);
 
     // Sauvegarder toutes les cartes en base de données
     await saveCardsToDatabase(allCards);
@@ -196,7 +155,7 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
       }
     };
   } catch (error) {
-    console.error('💥 Erreur complète:', error);
+    console.error('Erreur lors de la récupération des cartes:', error);
     if (error instanceof Error) {
       throw error;
     }
@@ -254,8 +213,6 @@ export function calculatePlayerPerformanceFromCard(card: import('../types/sorare
 }
 
 async function saveCardsToDatabase(cards: import('../types/sorare').SorareCard[]) {
-  console.log('💾 Sauvegarde de', cards.length, 'cartes en base de données');
-  
   for (const card of cards) {
     const dbCard = {
       id: card.id,
@@ -277,127 +234,10 @@ async function saveCardsToDatabase(cards: import('../types/sorare').SorareCard[]
         },
         body: JSON.stringify(dbCard),
       });
-      console.log('✅ Carte sauvegardée:', dbCard.displayName);
     } catch (error) {
-      console.error('❌ Erreur sauvegarde carte:', error);
+      console.error('Erreur sauvegarde carte:', error);
     }
   }
-}
-
-export async function fetchPlayerPerformance(playerId: string): Promise<PlayerPerformance | null> {
-  console.log('🏃 Récupération performance pour le joueur:', playerId);
-
-  try {
-    const response = await fetch(SORARE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: PLAYER_PERFORMANCE_QUERY,
-        variables: { playerId },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-
-    const json = await response.json();
-
-    if (json.errors && json.errors.length > 0) {
-      throw new Error(json.errors[0]?.message || 'Erreur API Sorare');
-    }
-
-    const player = json.data?.player;
-    if (!player) {
-      return null;
-    }
-
-    // Calculer les métriques de performance
-    const performance = calculatePerformanceMetrics(player);
-    
-    // Sauvegarder en base de données
-    await fetch(`${BACKEND_URL}/api/performances`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(performance),
-    });
-    
-    console.log('✅ Performance calculée:', performance.displayName);
-    return performance;
-  } catch (error) {
-    console.error('❌ Erreur récupération performance:', error);
-    return null;
-  }
-}
-
-function calculatePerformanceMetrics(player: {
-  id: string;
-  displayName: string;
-  position: string;
-  allSo5Scores?: { nodes: Array<{ score: number; game: { date: string } }> };
-  allSo5Appearances?: { nodes: Array<{ game: { date: string } }> };
-}): PlayerPerformance {
-  const scores = player.allSo5Scores?.nodes || [];
-  const appearances = player.allSo5Appearances?.nodes || [];
-  
-  // Trier par date (plus récent en premier)
-  const sortedScores = scores.sort((a, b) => 
-    new Date(b.game.date).getTime() - new Date(a.game.date).getTime()
-  );
-  
-  const sortedAppearances = appearances.sort((a, b) => 
-    new Date(b.game.date).getTime() - new Date(a.game.date).getTime()
-  );
-
-  // Calculer L5, L15, L40
-  const l5 = calculateAverageScore(sortedScores.slice(0, 5));
-  const l15 = calculateAverageScore(sortedScores.slice(0, 15));
-  const l40 = calculateAverageScore(sortedScores.slice(0, 40));
-
-  // Calculer DNP%
-  const totalGames = sortedAppearances.length;
-  const gamesPlayed = sortedScores.length;
-  const dnpPercentage = totalGames > 0 ? ((totalGames - gamesPlayed) / totalGames) * 100 : 0;
-
-  return {
-    playerId: player.id,
-    displayName: player.displayName,
-    position: player.position,
-    l5,
-    l15,
-    l40,
-    dnpPercentage,
-    gamesPlayed,
-    totalGames
-  };
-}
-
-function calculateAverageScore(scores: Array<{ score: number }>): number {
-  if (scores.length === 0) return 0;
-  
-  const validScores = scores.filter(score => score.score !== null && score.score !== undefined);
-  if (validScores.length === 0) return 0;
-  
-  const sum = validScores.reduce((acc, score) => acc + score.score, 0);
-  return Math.round((sum / validScores.length) * 100) / 100; // Arrondir à 2 décimales
-}
-
-// Fonction pour récupérer les performances depuis la base de données
-export async function getPlayerPerformanceFromDB(playerId: string): Promise<PlayerPerformance | undefined> {
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/performance/${playerId}`);
-    if (response.ok) {
-      const performance = await response.json();
-      return performance || undefined;
-    }
-  } catch (error) {
-    console.error('❌ Erreur récupération performance depuis DB:', error);
-  }
-  return undefined;
 }
 
 // Fonction pour obtenir les statistiques de la base de données
@@ -408,51 +248,39 @@ export async function getDatabaseStats(): Promise<{ cards: number; performances:
       return await response.json();
     }
   } catch (error) {
-    console.error('❌ Erreur récupération stats DB:', error);
+    console.error('Erreur récupération stats DB:', error);
   }
   return { cards: 0, performances: 0 };
 }
 
 // Nouvelles fonctions pour les GameWeeks
 export async function fetchGameWeeks(): Promise<GameWeek[]> {
-  console.log('📅 Récupération des GameWeeks');
-  console.log('🌐 URL utilisée:', SORARE_API_URL);
-  console.log('🔧 BACKEND_URL:', BACKEND_URL);
-
   try {
-    const requestBody = {
-      query: GAMEWEEKS_QUERY,
-    };
-    
-    console.log('📤 Corps de la requête:', JSON.stringify(requestBody, null, 2));
-
+    console.log('Début fetchGameWeeks');
     const response = await fetch(SORARE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        query: GAMEWEEKS_QUERY,
+      }),
     });
-
-    console.log('📥 Statut de la réponse:', response.status);
-    console.log('📥 Headers de la réponse:', response.headers);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Erreur HTTP:', response.status, errorText);
       throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
     }
 
     const json: GameWeeksResponse = await response.json();
-    console.log('📦 Réponse JSON:', JSON.stringify(json, null, 2));
+    console.log('Réponse API reçue:', JSON.stringify(json, null, 2));
 
     if (json.errors && json.errors.length > 0) {
-      console.error('❌ Erreurs API:', json.errors);
       throw new Error(json.errors[0]?.message || 'Erreur API Sorare');
     }
 
-    const fixtures = json.so5?.so5Fixtures?.nodes || [];
-    console.log('✅ GameWeeks récupérées:', fixtures.length);
+    const fixtures = json.data?.so5?.so5Fixtures?.nodes || json.so5?.so5Fixtures?.nodes || [];
+    console.log('Fixtures trouvées:', fixtures.length);
 
     // Convertir les fixtures en GameWeeks avec des informations de base
     const gameWeeks: GameWeek[] = fixtures.map(fixture => {
@@ -461,8 +289,19 @@ export async function fetchGameWeeks(): Promise<GameWeek[]> {
       let startDate, endDate;
       if (dateMatch) {
         const [_, startDay, startMonth, endDay, endMonth, year] = dateMatch;
-        startDate = `${startDay} ${startMonth} ${year}`;
-        endDate = `${endDay} ${endMonth} ${year}`;
+        
+        // Convertir les mois en anglais vers des numéros
+        const monthMap: { [key: string]: string } = {
+          'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+          'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
+          'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+        };
+        
+        const startMonthNum = monthMap[startMonth.toLowerCase()] || '01';
+        const endMonthNum = monthMap[endMonth.toLowerCase()] || '01';
+        
+        startDate = `${year}-${startMonthNum}-${startDay.padStart(2, '0')}`;
+        endDate = `${year}-${endMonthNum}-${endDay.padStart(2, '0')}`;
       }
 
       return {
@@ -474,17 +313,15 @@ export async function fetchGameWeeks(): Promise<GameWeek[]> {
       };
     });
 
-    console.log('✅ GameWeeks converties:', gameWeeks.length);
+    console.log('GameWeeks converties:', gameWeeks.length);
     return gameWeeks;
   } catch (error) {
-    console.error('❌ Erreur récupération GameWeeks:', error);
+    console.error('Erreur récupération GameWeeks:', error);
     return [];
   }
 }
 
 export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null> {
-  console.log('📅 Récupération détails GameWeek:', slug);
-
   try {
     const response = await fetch(SORARE_API_URL, {
       method: 'POST',
@@ -517,8 +354,19 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
     let startDate, endDate;
     if (dateMatch) {
       const [_, startDay, startMonth, endDay, endMonth, year] = dateMatch;
-      startDate = `${startDay} ${startMonth} ${year}`;
-      endDate = `${endDay} ${endMonth} ${year}`;
+      
+      // Convertir les mois en anglais vers des numéros
+      const monthMap: { [key: string]: string } = {
+        'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+        'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
+        'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+      };
+      
+      const startMonthNum = monthMap[startMonth.toLowerCase()] || '01';
+      const endMonthNum = monthMap[endMonth.toLowerCase()] || '01';
+      
+      startDate = `${year}-${startMonthNum}-${startDay.padStart(2, '0')}`;
+      endDate = `${year}-${endMonthNum}-${endDay.padStart(2, '0')}`;
     }
 
     const gameWeek: GameWeek = {
@@ -533,10 +381,9 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
       }))
     };
 
-    console.log('✅ Détails GameWeek récupérés:', gameWeek.slug);
     return gameWeek;
   } catch (error) {
-    console.error('❌ Erreur récupération détails GameWeek:', error);
+    console.error('Erreur récupération détails GameWeek:', error);
     return null;
   }
 }

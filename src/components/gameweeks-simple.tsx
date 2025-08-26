@@ -14,30 +14,14 @@ interface GameWeeksSimpleProps {
 export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSimpleProps) {
   const [showAll, setShowAll] = useState(false);
   const [expandedGameWeeks, setExpandedGameWeeks] = useState<Set<string>>(new Set());
-  
-  console.log('🎮 GameWeeksSimple - Props reçues:', { gameWeeks, isLoading });
-  console.log('📊 Nombre de GameWeeks:', gameWeeks?.length || 0);
-  console.log('🔄 Loading state:', isLoading);
-  console.log('👁️ Show all:', showAll);
 
-  // Filtrer les GameWeeks futures jusqu'à mi-septembre
+  // Afficher toutes les GameWeeks
   const getFutureGameWeeks = () => {
-    const now = new Date();
-    const midSeptember = new Date(now.getFullYear(), 8, 15); // 15 septembre (mois 8 = septembre)
-    
-    return gameWeeks.filter(gameWeek => {
-      if (!gameWeek.startDate) return false;
-      
-      const gameWeekStart = new Date(gameWeek.startDate);
-      return gameWeekStart >= now && gameWeekStart <= midSeptember;
-    }).sort((a, b) => {
-      if (!a.startDate || !b.startDate) return 0;
-      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-    });
+    console.log('🎮 GameWeeks reçues dans le composant:', gameWeeks.length, gameWeeks);
+    return gameWeeks.slice(0, 10); // Afficher les 10 premières
   };
 
   const futureGameWeeks = getFutureGameWeeks();
-  console.log('🔮 GameWeeks futures filtrées:', futureGameWeeks.length);
 
   function getStateColor(state: string): string {
     switch (state.toLowerCase()) {
@@ -81,7 +65,6 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   }
 
   if (isLoading) {
-    console.log('⏳ Affichage du loading...');
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -110,7 +93,6 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   }
 
   if (!gameWeeks || gameWeeks.length === 0) {
-    console.log('❌ Aucune GameWeek trouvée, affichage du message d\'erreur');
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -129,7 +111,6 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   }
 
   if (futureGameWeeks.length === 0) {
-    console.log('❌ Aucune GameWeek future trouvée');
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -143,7 +124,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
             <Calendar className="w-12 h-12 text-muted-foreground mx-auto" />
             <h3 className="text-lg font-semibold text-foreground">Aucune GameWeek future disponible</h3>
             <p className="text-muted-foreground">
-              Il n'y a actuellement aucune GameWeek future disponible jusqu'au 15 septembre.
+              Il n'y a actuellement aucune GameWeek future disponible.
             </p>
             <p className="text-sm text-muted-foreground">
               Revenez plus tard pour voir les nouvelles GameWeeks.
@@ -153,8 +134,6 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
       </div>
     );
   }
-
-  console.log('✅ Affichage des GameWeeks futures:', futureGameWeeks.length);
 
   const toggleGameWeekExpansion = (gameWeekSlug: string) => {
     setExpandedGameWeeks(prev => {

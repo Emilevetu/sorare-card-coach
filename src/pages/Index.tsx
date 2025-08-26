@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { fetchUserCards, fetchPlayerPerformance, getPlayerPerformanceFromDB, getDatabaseStats, fetchGameWeeks, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
+import { fetchUserCards, getDatabaseStats, fetchGameWeeks, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
 import { SorareUser, CardWithPerformance, RarityFilter, PositionFilter, AgeFilter, LeagueFilter, SeasonFilter, SortField, SortDirection, PlayerPerformance, GameWeek } from '../types/sorare';
 import { SearchForm } from '../components/search-form';
 import { UserSummary } from '../components/user-summary';
@@ -35,156 +35,21 @@ const Index = () => {
 
   // Charger les GameWeeks au démarrage
   useEffect(() => {
-    // Test de connexion au backend
-    fetch('http://localhost:3001/api/stats')
-      .then(response => response.json())
-      .then(data => {
-        console.log('✅ Connexion backend OK:', data);
-        loadGameWeeks();
-      })
-      .catch(error => {
-        console.error('❌ Erreur connexion backend:', error);
-        toast({
-          title: "Erreur de connexion",
-          description: "Impossible de se connecter au serveur backend",
-          variant: "destructive",
-        });
-      });
+    loadGameWeeks();
   }, []);
 
   const loadGameWeeks = async () => {
-    console.log('🔄 Début du chargement des GameWeeks');
     setIsLoadingGameWeeks(true);
     try {
-      console.log('📡 Test direct de l\'API...');
-      
-      // Test direct de l'API
-      const response = await fetch('http://localhost:3001/api/sorare', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: `query GameWeeks { 
-            so5 { 
-              so5Fixtures { 
-                nodes { 
-                  aasmState 
-                  slug 
-                } 
-              } 
-            } 
-          }`
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('📦 Données API directes:', data);
-      
-      const fixtures = data.data?.so5?.so5Fixtures?.nodes || [];
-      console.log('📊 Nombre de fixtures:', fixtures.length);
-      
-      // Convertir en GameWeeks et charger les détails
-      const gameWeeksData = [];
-      for (const fixture of fixtures.slice(0, 10)) { // Limiter à 10 pour éviter les timeouts
-        const dateMatch = fixture.slug.match(/football-(\d+)-(\w+)-(\d+)-(\w+)-(\d+)/);
-        let startDate, endDate;
-        if (dateMatch) {
-          const [_, startDay, startMonth, endDay, endMonth, year] = dateMatch;
-          startDate = `${startDay} ${startMonth} ${year}`;
-          endDate = `${endDay} ${endMonth} ${year}`;
-        }
-
-        // Charger les détails de la GameWeek
-        console.log('📅 Chargement détails pour:', fixture.slug);
-        const detailsResponse = await fetch('http://localhost:3001/api/sorare', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: `query GameWeekDetail($slug: String!) {
-              so5 {
-                so5Fixture(slug: $slug) {
-                  aasmState
-                  slug
-                  so5Leaderboards {
-                    so5League {
-                      displayName
-                    }
-                    rarityType
-                    division
-                  }
-                }
-              }
-            }`,
-            variables: { slug: fixture.slug }
-          }),
-        });
-
-        if (detailsResponse.ok) {
-          const detailsData = await detailsResponse.json();
-          const fixtureDetails = detailsData.data?.so5?.so5Fixture;
-          
-          if (fixtureDetails) {
-            const leagues = fixtureDetails.so5Leaderboards?.map((leaderboard: { so5League: { displayName: string }; rarityType: string; division: string }) => ({
-              name: leaderboard.so5League.displayName,
-              rarity: leaderboard.rarityType,
-              division: leaderboard.division
-            })) || [];
-
-            gameWeeksData.push({
-              slug: fixture.slug,
-              state: fixture.aasmState,
-              startDate,
-              endDate,
-              leagues
-            });
-            
-            console.log('✅ Détails chargés pour:', fixture.slug, '-', leagues.length, 'compétitions');
-          }
-        } else {
-          console.log('⚠️ Erreur chargement détails pour:', fixture.slug);
-          gameWeeksData.push({
-            slug: fixture.slug,
-            state: fixture.aasmState,
-            startDate,
-            endDate,
-            leagues: []
-          });
-        }
-      }
-
-      console.log('📦 GameWeeks converties:', gameWeeksData.length);
+      console.log('🔄 Début du chargement des GameWeeks...');
+      const gameWeeksData = await fetchGameWeeks();
+      console.log('✅ GameWeeks chargées:', gameWeeksData.length, gameWeeksData);
       setGameWeeks(gameWeeksData);
-      
-      if (gameWeeksData.length > 0) {
-        console.log('✅ GameWeeks chargées avec succès');
-        toast({
-          title: "GameWeeks chargées",
-          description: `${gameWeeksData.length} GameWeeks trouvées avec compétitions`,
-        });
-      } else {
-        console.log('⚠️ Aucune GameWeek trouvée');
-        toast({
-          title: "Aucune GameWeek",
-          description: "Aucune GameWeek trouvée",
-        });
-      }
     } catch (error) {
       console.error('❌ Erreur lors du chargement des GameWeeks:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les GameWeeks",
-        variant: "destructive",
-      });
     } finally {
-      console.log('🏁 Fin du chargement des GameWeeks');
       setIsLoadingGameWeeks(false);
+      console.log('🏁 Fin du chargement des GameWeeks');
     }
   };
 
@@ -215,21 +80,13 @@ const Index = () => {
 
       // Calculer automatiquement les performances à partir des données des cartes
       const cardsWithPerf: CardWithPerformance[] = [];
-      console.log('🔍 Traitement de', data.user.cards.nodes.length, 'cartes');
-      
       for (const card of data.user.cards.nodes) {
-        console.log('🔍 Traitement carte:', card.player.displayName, '- Rareté:', card.rarity);
         const performance = calculatePlayerPerformanceFromCard(card);
         cardsWithPerf.push({
           ...card,
           performance: performance || undefined
         });
       }
-
-      // Debug: afficher les raretés pour diagnostiquer le problème
-      console.log('🔍 Raretés des cartes récupérées:', data.user.cards.nodes.map(card => card.rarity));
-      console.log('📊 Cartes avec performances:', cardsWithPerf.map(card => ({ name: card.player.displayName, rarity: card.rarity })));
-      console.log('✅ Nombre final de cartes avec performances:', cardsWithPerf.length);
 
       setCardsWithPerformance(cardsWithPerf);
 
@@ -253,8 +110,6 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-
-
 
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
@@ -285,16 +140,9 @@ const Index = () => {
   }, [cardsWithPerformance]);
 
   const filteredAndSortedCards = useMemo(() => {
-    console.log('🔍 Debug filteredAndSortedCards - Nombre de cartes:', cardsWithPerformance.length);
-    console.log('🔍 Debug - Filtres actuels:', { searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter });
-    
-    if (!cardsWithPerformance.length) {
-      console.log('❌ Aucune carte avec performance');
-      return [];
-    }
+    if (!cardsWithPerformance.length) return [];
 
     let filtered = cardsWithPerformance;
-    console.log('🔍 Cartes avant filtrage:', filtered.length);
 
     // Filter by search term
     if (searchTerm) {
@@ -391,12 +239,10 @@ const Index = () => {
       }
     });
 
-    console.log('🔍 Cartes après filtrage et tri:', filtered.length);
     return filtered;
   }, [cardsWithPerformance, searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter, sortField, sortDirection]);
 
   const cardStats = useMemo(() => {
-    console.log('📊 Debug cardStats - Nombre de cartes:', cardsWithPerformance.length);
     if (!cardsWithPerformance.length) return { total: 0, limited: 0, rare: 0 };
 
     const total = cardsWithPerformance.length;
@@ -405,7 +251,6 @@ const Index = () => {
       ['rare', 'super rare', 'unique'].includes(card.rarity.toLowerCase())
     ).length;
 
-    console.log('📊 Stats calculées:', { total, limited, rare });
     return { total, limited, rare };
   }, [cardsWithPerformance]);
 
@@ -515,8 +360,6 @@ const Index = () => {
               </div>
             )}
           </div>
-
-
         </div>
       </div>
     </div>

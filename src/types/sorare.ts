@@ -98,6 +98,16 @@ export interface GameWeek {
 }
 
 export interface GameWeeksResponse {
+  data?: {
+    so5?: {
+      so5Fixtures?: {
+        nodes: Array<{
+          aasmState: string;
+          slug: string;
+        }>;
+      };
+    };
+  };
   so5?: {
     so5Fixtures?: {
       nodes: Array<{

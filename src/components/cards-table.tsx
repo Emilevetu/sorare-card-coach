@@ -43,9 +43,6 @@ function getTrendIcon(l5: number, l15: number) {
 }
 
 export function CardsTable({ cards }: CardsTableProps) {
-  console.log('🎯 CardsTable reçoit', cards.length, 'cartes');
-  console.log('🎯 Première carte:', cards[0]);
-  
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 12;
   const totalPages = Math.ceil(cards.length / cardsPerPage);
