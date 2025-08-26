@@ -283,7 +283,9 @@ export async function fetchGameWeeks(): Promise<GameWeek[]> {
     console.log('Fixtures trouvées:', fixtures.length);
 
     // Convertir les fixtures en GameWeeks avec des informations de base
-    const gameWeeks: GameWeek[] = fixtures.map(fixture => {
+    const gameWeeks: GameWeek[] = [];
+    
+    for (const fixture of fixtures) {
       // Extraire les dates du slug (ex: "football-30-aug-2-sep-2025")
       const dateMatch = fixture.slug.match(/football-(\d+)-(\w+)-(\d+)-(\w+)-(\d+)/);
       let startDate, endDate;
@@ -304,14 +306,34 @@ export async function fetchGameWeeks(): Promise<GameWeek[]> {
         endDate = `${year}-${endMonthNum}-${endDay.padStart(2, '0')}`;
       }
 
-      return {
-        slug: fixture.slug,
-        state: fixture.aasmState,
-        startDate,
-        endDate,
-        leagues: [] // On ne récupère pas les détails pour l'instant
-      };
-    });
+      // Charger les détails de la GameWeek pour récupérer les compétitions
+      console.log('📡 Chargement détails pour:', fixture.slug);
+      try {
+        const details = await fetchGameWeekDetail(fixture.slug);
+        console.log('🏆 Compétitions trouvées pour', fixture.slug, ':', details?.leagues?.length || 0);
+        
+        if (details) {
+          gameWeeks.push(details);
+        } else {
+          gameWeeks.push({
+            slug: fixture.slug,
+            state: fixture.aasmState,
+            startDate,
+            endDate,
+            leagues: []
+          });
+        }
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement des détails pour', fixture.slug, ':', error);
+        gameWeeks.push({
+          slug: fixture.slug,
+          state: fixture.aasmState,
+          startDate,
+          endDate,
+          leagues: []
+        });
+      }
+    }
 
     console.log('GameWeeks converties:', gameWeeks.length);
     return gameWeeks;
@@ -339,13 +361,23 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
     }
 
     const json: GameWeekDetailResponse = await response.json();
+    console.log('📊 Réponse détail reçue pour', slug, ':', JSON.stringify(json, null, 2));
 
     if (json.errors && json.errors.length > 0) {
       throw new Error(json.errors[0]?.message || 'Erreur API Sorare');
     }
 
-    const fixture = json.so5?.so5Fixture;
+    const fixture = json.data?.so5?.so5Fixture || json.so5?.so5Fixture;
+    console.log('🏟️ Fixture trouvée:', fixture);
     if (!fixture) {
+      console.log('❌ Aucune fixture trouvée dans la réponse');
+      console.log('📊 Structure de la réponse:', Object.keys(json));
+      if (json.data) {
+        console.log('📊 Clés dans data:', Object.keys(json.data));
+        if (json.data.so5) {
+          console.log('📊 Clés dans so5:', Object.keys(json.data.so5));
+        }
+      }
       return null;
     }
 
@@ -369,18 +401,22 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
       endDate = `${year}-${endMonthNum}-${endDay.padStart(2, '0')}`;
     }
 
+    console.log('🏆 so5Leaderboards:', fixture.so5Leaderboards);
+    console.log('🏆 Nombre de leaderboards:', fixture.so5Leaderboards?.length || 0);
+    
     const gameWeek: GameWeek = {
       slug: fixture.slug,
       state: fixture.aasmState,
       startDate,
       endDate,
-      leagues: fixture.so5Leaderboards.map(leaderboard => ({
+      leagues: fixture.so5Leaderboards?.map(leaderboard => ({
         name: leaderboard.so5League.displayName,
         rarity: leaderboard.rarityType,
         division: leaderboard.division
-      }))
+      })) || []
     };
 
+    console.log('🎮 GameWeek créée avec', gameWeek.leagues.length, 'compétitions');
     return gameWeek;
   } catch (error) {
     console.error('Erreur récupération détails GameWeek:', error);

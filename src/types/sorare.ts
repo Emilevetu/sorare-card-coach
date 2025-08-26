@@ -120,6 +120,21 @@ export interface GameWeeksResponse {
 }
 
 export interface GameWeekDetailResponse {
+  data?: {
+    so5?: {
+      so5Fixture?: {
+        aasmState: string;
+        slug: string;
+        so5Leaderboards: Array<{
+          so5League: {
+            displayName: string;
+          };
+          rarityType: string;
+          division: string;
+        }>;
+      };
+    };
+  };
   so5?: {
     so5Fixture?: {
       aasmState: string;

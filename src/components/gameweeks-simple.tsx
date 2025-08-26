@@ -251,17 +251,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
                     </Button>
                   )}
                   
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => {
-                      console.log('Analyser GameWeek:', gameWeek.slug);
-                      console.log('Compétitions:', gameWeek.leagues);
-                    }}
-                  >
-                    Analyser mes cartes
-                  </Button>
+
                 </div>
               </div>
             </CardContent>
