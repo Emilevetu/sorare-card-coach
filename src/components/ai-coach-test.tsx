@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { callOpenAI, ChatMessage } from '@/lib/openai-config';
+
+import { callOpenAI, ChatMessage, UserCard } from '@/lib/openai-config';
 
 interface Message {
   id: string;
@@ -12,11 +12,17 @@ interface Message {
   timestamp: Date;
 }
 
-export function AICoachTest() {
+interface AICoachTestProps {
+  userCards?: UserCard[];
+}
+
+export function AICoachTest({ userCards }: AICoachTestProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Bonjour ! Je suis votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
+      text: userCards && userCards.length > 0 
+        ? `Bonjour ! Je suis Pep, votre coach Sorare. J'ai accès à vos ${userCards.length} cartes et je peux vous aider à optimiser votre collection ! Comment puis-je vous aider aujourd'hui ?`
+        : 'Bonjour ! Je suis Pep, votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
       isUser: false,
       timestamp: new Date()
     }
@@ -24,6 +30,14 @@ export function AICoachTest() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([]);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll vers le bas quand de nouveaux messages arrivent
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -49,8 +63,8 @@ export function AICoachTest() {
       const updatedHistory = [...conversationHistory, newUserChatMessage];
       setConversationHistory(updatedHistory);
 
-      // Appeler l'API OpenAI
-      const aiResponse = await callOpenAI(inputValue, updatedHistory);
+      // Appeler l'API OpenAI avec les cartes utilisateur
+      const aiResponse = await callOpenAI(inputValue, updatedHistory, userCards);
 
       // Ajouter la réponse de l'IA à l'historique
       const newAIChatMessage: ChatMessage = {
@@ -93,7 +107,7 @@ export function AICoachTest() {
   };
 
   return (
-    <Card className="w-full h-[500px] flex flex-col">
+    <Card className="w-full max-h-[600px] flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -103,12 +117,14 @@ export function AICoachTest() {
             variant="outline"
             size="sm"
             onClick={() => {
-              setMessages([{
-                id: '1',
-                text: 'Bonjour ! Je suis votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
-                isUser: false,
-                timestamp: new Date()
-              }]);
+                          setMessages([{
+              id: '1',
+              text: userCards && userCards.length > 0 
+                ? `Bonjour ! Je suis Pep, votre coach Sorare. J'ai accès à vos ${userCards.length} cartes et je peux vous aider à optimiser votre collection ! Comment puis-je vous aider aujourd'hui ?`
+                : 'Bonjour ! Je suis Pep, votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
+              isUser: false,
+              timestamp: new Date()
+            }]);
               setConversationHistory([]);
             }}
           >
@@ -119,7 +135,7 @@ export function AICoachTest() {
       
       <CardContent className="flex-1 flex flex-col p-4 pt-0">
         {/* Zone de messages */}
-        <ScrollArea className="flex-1 mb-4 pr-4">
+        <div className="flex-1 mb-4 overflow-y-auto max-h-[400px] pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -156,7 +172,7 @@ export function AICoachTest() {
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Zone de saisie */}
         <div className="flex gap-2">
