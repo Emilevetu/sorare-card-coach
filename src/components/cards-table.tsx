@@ -59,7 +59,8 @@ function SortableHeader({
   currentSort, 
   currentDirection, 
   onSort, 
-  children 
+  children,
+  className = ""
 }: { 
   title: string; 
   field: SortField; 
@@ -67,9 +68,10 @@ function SortableHeader({
   currentDirection: SortDirection; 
   onSort: (field: SortField) => void; 
   children?: React.ReactNode; 
+  className?: string;
 }) {
   return (
-    <TableHead className="font-semibold text-gray-900 py-4 cursor-pointer hover:bg-gray-100/50 transition-colors">
+    <TableHead className={`font-semibold text-gray-900 py-4 cursor-pointer hover:bg-gray-100/50 transition-colors ${className}`}>
       <Button
         variant="ghost"
         onClick={() => onSort(field)}
@@ -99,7 +101,8 @@ function FilterableHeader({
   filterValue, 
   onFilterChange, 
   options, 
-  placeholder 
+  placeholder,
+  className = ""
 }: { 
   title: string; 
   field: SortField; 
@@ -110,9 +113,10 @@ function FilterableHeader({
   onFilterChange: (value: string) => void; 
   options: string[]; 
   placeholder: string; 
+  className?: string;
 }) {
   return (
-    <TableHead className="font-semibold text-gray-900 py-4">
+    <TableHead className={`font-semibold text-gray-900 py-4 ${className}`}>
       <div className="space-y-2">
         <Button
           variant="ghost"
@@ -215,6 +219,7 @@ export function CardsTable({
                 onFilterChange={onAgeChange}
                 options={['-23 ans']}
                 placeholder="Âge"
+                className="text-center"
               />
               <TableHead className="font-semibold text-gray-900 py-4">Club</TableHead>
               <FilterableHeader 
@@ -249,27 +254,31 @@ export function CardsTable({
                 onFilterChange={onSeasonChange}
                 options={availableSeasons}
                 placeholder="Saison"
+                className="text-center"
               />
               <SortableHeader 
                 title="XP" 
                 field="xp" 
                 currentSort={sortField} 
                 currentDirection={sortDirection} 
-                onSort={onSortChange} 
+                onSort={onSortChange}
+                className="text-center"
               />
               <SortableHeader 
                 title="L15" 
                 field="l15" 
                 currentSort={sortField} 
                 currentDirection={sortDirection} 
-                onSort={onSortChange} 
+                onSort={onSortChange}
+                className="text-center"
               />
               <SortableHeader 
                 title="Matchs Joués" 
                 field="dnp" 
                 currentSort={sortField} 
                 currentDirection={sortDirection} 
-                onSort={onSortChange} 
+                onSort={onSortChange}
+                className="text-center"
               />
             </TableRow>
           </TableHeader>
@@ -278,7 +287,7 @@ export function CardsTable({
               <TableRow key={card.id} className="border-gray-200/30 hover:bg-gray-50/50 transition-all duration-200">
                 <TableCell className="font-medium">{card.player.displayName}</TableCell>
                 <TableCell>{card.player.position}</TableCell>
-                <TableCell>{card.player.age}</TableCell>
+                <TableCell className="text-center">{card.player.age}</TableCell>
                 <TableCell>
                   {card.player.activeClub?.name || '—'}
                 </TableCell>
@@ -290,11 +299,11 @@ export function CardsTable({
                     {card.rarity}
                   </Badge>
                 </TableCell>
-                <TableCell>{card.season.startYear}</TableCell>
-                <TableCell className="text-right font-mono font-medium">
+                <TableCell className="text-center">{card.season.startYear}</TableCell>
+                <TableCell className="text-center font-mono font-medium">
                   {formatXP(card.xp)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   {card.performance ? (
                     <span className={`font-semibold ${getPerformanceColor(card.performance.l15)}`}>
                       {card.performance.l15}
@@ -303,7 +312,7 @@ export function CardsTable({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   {card.performance ? (
                     <span className={`font-semibold ${card.performance.gamesPlayed >= card.performance.totalGames * 0.8 ? 'text-green-600' : card.performance.gamesPlayed >= card.performance.totalGames * 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
                       {card.performance.gamesPlayed}/{card.performance.totalGames}
