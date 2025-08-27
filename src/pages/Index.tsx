@@ -318,16 +318,9 @@ const Index = () => {
 
                      {/* Mon Coach Section - Visible seulement si utilisateur connecté */}
            {user && (
-             <div className="space-y-6">
+             <div className="space-y-4">
                <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
                <AICoach gameWeeks={[]} />
-             </div>
-           )}
-
-           {/* Mon Coach Test Section - Visible seulement si utilisateur connecté */}
-           {user && (
-             <div className="space-y-6">
-               <h2 className="text-3xl font-bold text-foreground">Mon Coach Test</h2>
                <AICoachTest userCards={cardsWithPerformance} />
              </div>
            )}

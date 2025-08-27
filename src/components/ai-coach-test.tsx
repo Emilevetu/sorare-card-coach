@@ -113,7 +113,7 @@ export function AICoachTest({ userCards }: AICoachTestProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            💬 Mon Coach Test
+            Discute avec le Coach
           </CardTitle>
           <Button
             variant="outline"

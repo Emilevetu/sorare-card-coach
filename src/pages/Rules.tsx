@@ -16,7 +16,7 @@ export function Rules() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-black">
-              Règles du Jeu Sorare
+              Règles du Jeu - Sorare
             </h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Guide complet des mécaniques et bonus du fantasy football Sorare
