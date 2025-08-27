@@ -221,40 +221,136 @@ app.post('/api/openai', async (req, res) => {
   const { userMessage, conversationHistory, systemPrompt, userCards } = req.body;
 
   try {
-    // Créer le prompt système avec les fonctions disponibles
+    // Analyser le message utilisateur pour détecter les demandes de règles
+    let enhancedUserMessage = userMessage;
+    let rulesContext = "";
+    
+    // Détecter les demandes de règles et récupérer les données
+    const competitionMatches = userMessage.match(/premier league|ligue 1|laliga|bundesliga|arena|champion europe|u23|all star|challenger|contender/gi);
+    const bonusMatches = userMessage.match(/xp|niveaux|collection|capitaine|new season|cap bonus|multi club/gi);
+    const ruleMatches = userMessage.match(/divisions|hot streak|in season|multi entries/gi);
+    
+    if (competitionMatches) {
+      rulesContext += "\n\n## 📋 RÈGLES DE COMPÉTITIONS DISPONIBLES :\n";
+      for (const match of competitionMatches) {
+        const normalizedName = match.toLowerCase().replace(/\s+/g, '_');
+        const rules = getCompetitionRules(normalizedName);
+        if (rules) {
+          rulesContext += `\n### ${match.toUpperCase()} :\n`;
+          
+          // Gestion spéciale pour l'Arena qui a des sous-sections
+          if (normalizedName === 'arena') {
+            if (rules.capped) {
+              rulesContext += `**Arena Capped :**\n`;
+              rulesContext += `- Description : ${rules.capped.description}\n`;
+              rulesContext += `- Coût d'entrée : ${rules.capped.entry_cost}\n`;
+              rulesContext += `- Cap : ${rules.capped.cap}\n`;
+              rulesContext += `- Bonus : ${rules.capped.bonuses}\n`;
+              rulesContext += `- Récompenses : ${rules.capped.rewards}\n`;
+            }
+            if (rules.uncapped) {
+              rulesContext += `\n**Arena Uncapped :**\n`;
+              rulesContext += `- Description : ${rules.uncapped.description}\n`;
+              rulesContext += `- Coût d'entrée : ${rules.uncapped.entry_cost}\n`;
+              rulesContext += `- Cap : ${rules.uncapped.cap}\n`;
+              rulesContext += `- Bonus : ${rules.uncapped.bonuses}\n`;
+              rulesContext += `- Récompenses : ${rules.uncapped.rewards}\n`;
+            }
+          } else {
+            // Structure normale pour les autres compétitions
+            rulesContext += `- Format : ${rules.format}\n`;
+            rulesContext += `- Éligibilité : ${rules.eligibility}\n`;
+            rulesContext += `- Composition : ${rules.composition}\n`;
+            rulesContext += `- Capitaine : ${rules.captain}\n`;
+            if (rules.hot_streak) rulesContext += `- Hot Streak : ${rules.hot_streak}\n`;
+            if (rules.bonuses) {
+              rulesContext += `- Bonus Rare : ${rules.bonuses.rare}\n`;
+              rulesContext += `- Bonus Super Rare : ${rules.bonuses.super_rare}\n`;
+              rulesContext += `- Bonus Unique : ${rules.bonuses.unique}\n`;
+            }
+            if (rules.rewards) rulesContext += `- Récompenses : ${rules.rewards}\n`;
+          }
+        }
+      }
+    }
+    
+    if (bonusMatches) {
+      rulesContext += "\n\n## 🎯 BONUS ET MÉCANIQUES DISPONIBLES :\n";
+      for (const match of bonusMatches) {
+        if (match.toLowerCase().includes('xp') || match.toLowerCase().includes('niveaux')) {
+          const xpRules = getBonusInfo('xp');
+          if (xpRules) {
+            rulesContext += `\n### XP ET NIVEAUX :\n`;
+            rulesContext += `- Niveau max : ${xpRules.max_level}\n`;
+            rulesContext += `- XP max : ${xpRules.max_xp}\n`;
+            rulesContext += `- Gains GW : ${xpRules.gains.game_week}\n`;
+            rulesContext += `- Pénalité transfert : ${xpRules.gains.transfer_penalty}\n`;
+          }
+        }
+        if (match.toLowerCase().includes('collection')) {
+          const collectionRules = getBonusInfo('collection');
+          if (collectionRules) {
+            rulesContext += `\n### COLLECTION :\n`;
+            rulesContext += `- Baseline : +${collectionRules.scoring.baseline} pts\n`;
+            rulesContext += `- Serial #1 : +${collectionRules.scoring.serial_1} pts\n`;
+            rulesContext += `- Jersey match : +${collectionRules.scoring.jersey_match} pts\n`;
+            rulesContext += `- Édition spéciale : +${collectionRules.scoring.special_edition} pts\n`;
+          }
+        }
+        if (match.toLowerCase().includes('capitaine')) {
+          const captainRules = getBonusInfo('captain');
+          if (captainRules) {
+            rulesContext += `\n### CAPITAINE :\n`;
+            rulesContext += `- Arena : ${captainRules.arena}\n`;
+            rulesContext += `- In-Season : ${captainRules.in_season}\n`;
+            rulesContext += `- Classic : ${captainRules.classic}\n`;
+          }
+        }
+      }
+    }
+    
+    if (ruleMatches) {
+      rulesContext += "\n\n## 📜 RÈGLES GÉNÉRALES DISPONIBLES :\n";
+      for (const match of ruleMatches) {
+        if (match.toLowerCase().includes('divisions')) {
+          const divisionRules = getRuleInfo('divisions');
+          if (divisionRules) {
+            rulesContext += `\n### DIVISIONS :\n`;
+            rulesContext += `- Structure : ${divisionRules.structure.join(', ')}\n`;
+            rulesContext += `- Promotions D3→D2 : ${divisionRules.promotions.d3_to_d2}\n`;
+            rulesContext += `- Promotions D2→D1 : ${divisionRules.promotions.d2_to_d1}\n`;
+          }
+        }
+        if (match.toLowerCase().includes('hot streak')) {
+          const hotStreakRules = getRuleInfo('hot_streak');
+          if (hotStreakRules) {
+            rulesContext += `\n### HOT STREAK :\n`;
+            rulesContext += `- Description : ${hotStreakRules.description}\n`;
+            rulesContext += `- Seuil Limited : ${hotStreakRules.limited_threshold}\n`;
+            rulesContext += `- Seuil Rare : ${hotStreakRules.rare_threshold}\n`;
+            rulesContext += `- Boost : ${hotStreakRules.boost}\n`;
+          }
+        }
+      }
+    }
+
+    // Créer le prompt système avec les règles contextuelles
     const enhancedSystemPrompt = `${systemPrompt}
 
-## 🔧 FONCTIONS DISPONIBLES
-Tu as accès aux règles Sorare via ces fonctions. Utilise-les quand nécessaire :
+## 🔧 CONTEXTE DES RÈGLES
+${rulesContext}
 
-### Règles de compétition :
-- get_competition_rules("premier_league") → règles Premier League
-- get_competition_rules("ligue_1") → règles Ligue 1
-- get_competition_rules("arena") → règles Arena
-- get_competition_rules("champion_europe") → règles Champion Europe
-
-### Bonus et mécaniques :
-- get_bonus("xp", "levels") → niveaux XP
-- get_bonus("collection", "scoring") → scoring collection
-- get_bonus("captain") → bonus capitaine
-- get_bonus("new_season") → bonus nouvelle saison
-
-### Règles générales :
-- get_rule("divisions") → système de divisions
-- get_rule("hot_streak") → mécanique Hot Streak
-- get_rule("in_season_status") → statut In-Season
-
-### Listes :
-- get_list("competitions") → toutes les compétitions
-- get_list("bonuses") → tous les types de bonus
-
-## 📋 COMMENT UTILISER CES FONCTIONS
-Si on te pose une question sur les règles, utilise ces fonctions pour donner des réponses précises et à jour.`;
+## 📋 INSTRUCTIONS IMPORTANTES
+- Utilise les informations des règles ci-dessus pour répondre
+- Ne mentionne pas les fonctions ou le code
+- Donne des réponses directes et complètes
+- Formate tes réponses avec le Markdown complet
+- Sois précis et détaillé dans tes explications`;
 
     const messages = [
       { role: 'system', content: enhancedSystemPrompt },
       ...conversationHistory,
-      { role: 'user', content: userMessage }
+      { role: 'user', content: enhancedUserMessage }
     ];
 
     const completion = await openai.chat.completions.create({
