@@ -4,6 +4,8 @@ const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
 const OpenAI = require('openai');
+const fetch = require('node-fetch');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -50,6 +52,57 @@ db.exec(`
 const openai = new OpenAI({
   apiKey: process.env.VITE_OPENAI_API_KEY || 'your-api-key-here',
 });
+
+// Charger les règles Sorare
+const loadSorareRules = () => {
+  try {
+    const rulesPath = path.join(__dirname, 'src', 'data', 'sorare-rules.json');
+    const rulesData = fs.readFileSync(rulesPath, 'utf8');
+    return JSON.parse(rulesData);
+  } catch (error) {
+    console.error('Erreur lors du chargement des règles:', error);
+    return null;
+  }
+};
+
+const sorareRules = loadSorareRules();
+
+// Fonctions pour accéder aux règles
+const getCompetitionRules = (competitionName) => {
+  if (!sorareRules || !sorareRules.competitions) return null;
+  
+  // Normaliser le nom de la compétition
+  const normalizedName = competitionName.toLowerCase().replace(/\s+/g, '_');
+  return sorareRules.competitions[normalizedName] || null;
+};
+
+const getBonusInfo = (bonusType, subType = null) => {
+  if (!sorareRules || !sorareRules.bonuses) return null;
+  
+  if (subType) {
+    return sorareRules.bonuses[bonusType]?.[subType] || null;
+  }
+  return sorareRules.bonuses[bonusType] || null;
+};
+
+const getRuleInfo = (ruleType, subType = null) => {
+  if (!sorareRules || !sorareRules.rules) return null;
+  
+  if (subType) {
+    return sorareRules.rules[ruleType]?.[subType] || null;
+  }
+  return sorareRules.rules[ruleType] || null;
+};
+
+const getAllCompetitions = () => {
+  if (!sorareRules || !sorareRules.competitions) return null;
+  return Object.keys(sorareRules.competitions);
+};
+
+const getAllBonuses = () => {
+  if (!sorareRules || !sorareRules.bonuses) return null;
+  return Object.keys(sorareRules.bonuses);
+};
 
 // Configuration du modèle
 const MODEL_CONFIG = {
@@ -136,32 +189,90 @@ app.post('/api/performances', (req, res) => {
   }
 });
 
+// Endpoint pour les règles Sorare
+app.get('/api/sorare-rules', (req, res) => {
+  const { type, name, subType } = req.query;
+  
+  let result = null;
+  
+  if (type === 'competition') {
+    result = getCompetitionRules(name);
+  } else if (type === 'bonus') {
+    result = getBonusInfo(name, subType);
+  } else if (type === 'rule') {
+    result = getRuleInfo(name, subType);
+  } else if (type === 'list') {
+    if (name === 'competitions') {
+      result = getAllCompetitions();
+    } else if (name === 'bonuses') {
+      result = getAllBonuses();
+    }
+  }
+  
+  if (result) {
+    res.json({ success: true, data: result });
+  } else {
+    res.status(404).json({ success: false, error: 'Règle non trouvée' });
+  }
+});
+
 // Endpoint pour les appels OpenAI
 app.post('/api/openai', async (req, res) => {
-  try {
-    const { userMessage, conversationHistory, systemPrompt } = req.body;
+  const { userMessage, conversationHistory, systemPrompt, userCards } = req.body;
 
-    // Construire les messages avec le système prompt et l'historique
+  try {
+    // Créer le prompt système avec les fonctions disponibles
+    const enhancedSystemPrompt = `${systemPrompt}
+
+## 🔧 FONCTIONS DISPONIBLES
+Tu as accès aux règles Sorare via ces fonctions. Utilise-les quand nécessaire :
+
+### Règles de compétition :
+- get_competition_rules("premier_league") → règles Premier League
+- get_competition_rules("ligue_1") → règles Ligue 1
+- get_competition_rules("arena") → règles Arena
+- get_competition_rules("champion_europe") → règles Champion Europe
+
+### Bonus et mécaniques :
+- get_bonus("xp", "levels") → niveaux XP
+- get_bonus("collection", "scoring") → scoring collection
+- get_bonus("captain") → bonus capitaine
+- get_bonus("new_season") → bonus nouvelle saison
+
+### Règles générales :
+- get_rule("divisions") → système de divisions
+- get_rule("hot_streak") → mécanique Hot Streak
+- get_rule("in_season_status") → statut In-Season
+
+### Listes :
+- get_list("competitions") → toutes les compétitions
+- get_list("bonuses") → tous les types de bonus
+
+## 📋 COMMENT UTILISER CES FONCTIONS
+Si on te pose une question sur les règles, utilise ces fonctions pour donner des réponses précises et à jour.`;
+
     const messages = [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: enhancedSystemPrompt },
       ...conversationHistory,
       { role: 'user', content: userMessage }
     ];
 
-    const response = await openai.chat.completions.create({
-      model: MODEL_CONFIG.model,
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
       messages: messages,
-      temperature: MODEL_CONFIG.temperature,
-      max_tokens: MODEL_CONFIG.max_tokens,
+      max_tokens: 1000,
+      temperature: 0.7,
     });
 
-    const aiResponse = response.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
-    
-    res.json({ response: aiResponse });
+    res.json({ 
+      response: completion.choices[0].message.content,
+      usage: completion.usage 
+    });
+
   } catch (error) {
     console.error('Erreur OpenAI:', error);
     res.status(500).json({ 
-      error: 'Erreur lors de l\'appel à l\'API OpenAI',
+      error: "Erreur lors de l'appel à l'API OpenAI",
       details: error.message 
     });
   }

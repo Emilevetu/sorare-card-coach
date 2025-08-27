@@ -1,0 +1,224 @@
+{
+  "competitions": {
+    "arena": {
+      "capped": {
+        "description": "Arena avec cap L15 ≤ 260",
+        "entry_cost": 100,
+        "cap": 260,
+        "bonuses": "désactivés",
+        "rewards": "Essence selon rareté"
+      },
+      "uncapped": {
+        "description": "Arena sans cap",
+        "entry_cost": 250,
+        "cap": "aucun",
+        "bonuses": "activés (Cap Bonus, Multi-Club)",
+        "rewards": "Essence selon rareté + Golden Arenas"
+      }
+    },
+    "premier_league": {
+      "format": "SO5",
+      "eligibility": "joueurs Premier League uniquement",
+      "composition": "min. 4 In-Season + max 1 Classique",
+      "captain": "+50%",
+      "hot_streak": "actif (360 Limited, 400 Rare, boost x2)",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "+10% (en SR Extra)"
+      }
+    },
+    "ligue_1": {
+      "format": "SO5",
+      "eligibility": "joueurs Ligue 1 uniquement",
+      "composition": "min. 4 In-Season",
+      "captain": "+50%",
+      "hot_streak": "actif (360 Limited, 400 Rare, boost x2)",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "1 Unique Classic autorisée en extra"
+      }
+    },
+    "laliga": {
+      "format": "SO5",
+      "eligibility": "joueurs LaLiga uniquement",
+      "composition": "min. 4 In-Season",
+      "captain": "+50%",
+      "hot_streak": "actif (360 Limited, 400 Rare, boost x2)",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "+10% (extra SR)"
+      }
+    },
+    "bundesliga": {
+      "format": "SO5",
+      "eligibility": "joueurs Bundesliga uniquement",
+      "composition": "min. 4 In-Season",
+      "captain": "+50%",
+      "divisions": ["D1", "D2", "D3"],
+      "hot_streak": "actif (360 Limited, 400 Rare, boost x2)",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "+10% (extra SR)"
+      }
+    },
+    "challenger": {
+      "format": "SO5",
+      "eligibility": "ligues: Primeira Liga, Süper Lig, Danish Superliga, Austrian Bundesliga, Scottish Premiership, Serie A",
+      "composition": "min. 4 In-Season",
+      "captain": "+50%",
+      "hot_streak": "actif (360 Limited, 400 Rare, boost x2)",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "autorisée en extra SR"
+      }
+    },
+    "contender": {
+      "format": "SO5",
+      "eligibility": "ligues hors Top 5 + Challenger",
+      "composition": "min. 4 In-Season",
+      "captain": "+50%",
+      "hot_streak": "actif",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+40%",
+        "unique": "1 Unique Classic autorisée en extra SR"
+      }
+    },
+    "champion_europe": {
+      "format": "SO7",
+      "eligibility": "Top 5 ligues uniquement",
+      "captain": "+50%",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+20%",
+        "unique": "+40%"
+      },
+      "rewards": "cartes (Star/Tier) + Essence"
+    },
+    "u23": {
+      "format": "SO7",
+      "eligibility": "joueurs ≤ 23 ans au 1er juillet 2025",
+      "captain": "+50%",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+20%",
+        "unique": "+40%"
+      },
+      "rewards": "cartes + Essence"
+    },
+    "all_star": {
+      "format": "SO7",
+      "eligibility": "toutes ligues",
+      "captain": "+50%",
+      "bonuses": {
+        "rare": "+10%",
+        "super_rare": "+20%",
+        "unique": "+40%"
+      },
+      "rewards": "cartes (Star, Tier) + Essence"
+    }
+  },
+  "bonuses": {
+    "lineup": {
+      "cap_bonus": {
+        "description": "Bonus +4% si L15 total ≤ 260 (SO5) ou ≤ 370 (SO7)",
+        "condition": "somme L15 ≤ 260",
+        "bonus": "+4%"
+      },
+      "multi_club": {
+        "description": "Bonus +2% si ≤ 2 joueurs du même club",
+        "condition": "max 2 joueurs par club",
+        "bonus": "+2%",
+        "exceptions": "désactivé en All-Star et U23 pendant trêves"
+      }
+    },
+    "xp": {
+      "max_level": 10,
+      "max_xp": 30000,
+      "levels": {
+        "0": {"xp_required": 0, "bonus": "0%", "cooldown": "–"},
+        "1": {"xp_required": 200, "bonus": "+1%", "cooldown": "1 jour"},
+        "2": {"xp_required": 600, "bonus": "+2%", "cooldown": "1 semaine"},
+        "3": {"xp_required": 1200, "bonus": "+3%", "cooldown": "2 semaines"},
+        "4": {"xp_required": 2200, "bonus": "+4%", "cooldown": "2 semaines"},
+        "5": {"xp_required": 3700, "bonus": "+5%", "cooldown": "2 semaines"},
+        "6": {"xp_required": 5700, "bonus": "+6%", "cooldown": "2 semaines"},
+        "7": {"xp_required": 8700, "bonus": "+7%", "cooldown": "4 semaines"},
+        "8": {"xp_required": 13700, "bonus": "+8%", "cooldown": "4 semaines"},
+        "9": {"xp_required": 21200, "bonus": "+9%", "cooldown": "6 semaines"},
+        "10": {"xp_required": 31200, "bonus": "+10%", "cooldown": "–"}
+      },
+      "gains": {
+        "game_week": "score de base total / 5",
+        "ranking": "500 XP pour top 30-50% en In-Season",
+        "transfer_penalty": "perte de 50% XP"
+      }
+    },
+    "collection": {
+      "scoring": {
+        "baseline": 10,
+        "serial_1": 30,
+        "jersey_match": 30,
+        "special_edition": 20,
+        "one_owner": 20,
+        "non_listed_30d": 20
+      },
+      "bonuses": {
+        "0_34": "0%",
+        "35_99": "+1%",
+        "100_249": "+2%",
+        "250_499": "+3%",
+        "500_749": "+4%",
+        "750_plus": "+5%"
+      },
+      "restrictions": {
+        "listed_cards": "aucun score",
+        "recent_transfers": "perte du bonus +20 pts (90 jours)"
+      }
+    },
+    "captain": {
+      "arena": "+20%",
+      "in_season": "+50%",
+      "classic": "+50%"
+    },
+    "new_season": {
+      "description": "Bonus +5% pour cartes de la saison en cours",
+      "bonus": "+5%",
+      "expiry": "11 jours avant premier match saison suivante"
+    }
+  },
+  "rules": {
+    "divisions": {
+      "structure": ["D1", "D2", "D3"],
+      "promotions": {
+        "d3_to_d2": "Top 30%",
+        "d2_to_d1": "Top 15%"
+      },
+      "relegations": {
+        "d2_to_d3": "Bottom 30%",
+        "d1_to_d2": "Bottom 30%"
+      }
+    },
+    "multi_entries": {
+      "max_per_competition": 4,
+      "unlocked_by_default": true
+    },
+    "hot_streak": {
+      "description": "Seuils de points → cash",
+      "limited_threshold": 360,
+      "rare_threshold": 400,
+      "boost": "x2",
+      "requirements": "4 cartes In-Season + 1 classique"
+    },
+    "in_season_status": {
+      "description": "Carte In-Season tant que saison active",
+      "loss": "11 jours avant premier match nouvelle saison",
+      "consequence": "devient Classic Season, perd NSP (+5%)"
+    }
+  }
+}
