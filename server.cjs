@@ -5,12 +5,7 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const OpenAI = require('openai');
 // Import fetch pour Node.js
-let fetch;
-if (typeof globalThis.fetch === 'undefined') {
-  fetch = require('node-fetch');
-} else {
-  fetch = globalThis.fetch;
-}
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const fs = require('fs');
 
 const app = express();
@@ -404,7 +399,11 @@ app.post('/api/sorare', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Erreur lors de l\'appel à l\'API Sorare:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'appel à l\'API Sorare' });
+    res.status(500).json({ 
+      error: 'Erreur lors de l\'appel à l\'API Sorare',
+      details: error.message,
+      stack: error.stack
+    });
   }
 });
 

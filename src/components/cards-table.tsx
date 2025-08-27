@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, Minus, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
 
 interface CardsTableProps {
@@ -30,17 +30,12 @@ function formatXP(xp: number): string {
 }
 
 function getPerformanceColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
-  if (score >= 40) return 'text-orange-600';
+  if (score >= 60) return 'text-green-600';
+  if (score >= 40) return 'text-yellow-600';
   return 'text-red-600';
 }
 
-function getTrendIcon(l5: number, l15: number) {
-  if (l5 > l15) return <TrendingUp className="w-4 h-4 text-green-600" />;
-  if (l5 < l15) return <TrendingDown className="w-4 h-4 text-red-600" />;
-  return <Minus className="w-4 h-4 text-gray-400" />;
-}
+
 
 export function CardsTable({ cards }: CardsTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,10 +73,10 @@ export function CardsTable({ cards }: CardsTableProps) {
               <TableHead className="font-semibold text-gray-900 py-4">Club</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Ligue</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Rareté</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4 text-right">XP</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">Saison</TableHead>
+              <TableHead className="font-semibold text-gray-900 py-4 text-right">XP</TableHead>
               <TableHead className="font-semibold text-gray-900 py-4">L15</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">DNP%</TableHead>
+              <TableHead className="font-semibold text-gray-900 py-4">Matchs Joués</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,26 +96,23 @@ export function CardsTable({ cards }: CardsTableProps) {
                     {card.rarity}
                   </Badge>
                 </TableCell>
+                <TableCell>{card.season.startYear}</TableCell>
                 <TableCell className="text-right font-mono font-medium">
                   {formatXP(card.xp)}
                 </TableCell>
-                <TableCell>{card.season.startYear}</TableCell>
                 <TableCell>
                   {card.performance ? (
-                    <div className="flex items-center gap-1">
-                      <span className={`font-semibold ${getPerformanceColor(card.performance.l15)}`}>
-                        {card.performance.l15}
-                      </span>
-                      {getTrendIcon(card.performance.l5, card.performance.l15)}
-                    </div>
+                    <span className={`font-semibold ${getPerformanceColor(card.performance.l15)}`}>
+                      {card.performance.l15}
+                    </span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
                 <TableCell>
                   {card.performance ? (
-                    <span className={`font-semibold ${card.performance.dnpPercentage > 25 ? 'text-red-600' : 'text-green-600'}`}>
-                      {card.performance.dnpPercentage.toFixed(1)}%
+                    <span className={`font-semibold ${card.performance.gamesPlayed >= card.performance.totalGames * 0.8 ? 'text-green-600' : card.performance.gamesPlayed >= card.performance.totalGames * 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      {card.performance.gamesPlayed}/{card.performance.totalGames}
                     </span>
                   ) : (
                     <span className="text-muted-foreground">—</span>

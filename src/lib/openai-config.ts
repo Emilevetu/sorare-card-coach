@@ -22,6 +22,8 @@ Si une position manque (ex: FWD In-Season), suggérer un achat raisonnable dans 
 
 Les 2 infos les plus importantes sur les joueurs sont : DNP% et L15.
 
+Concernant le Captain : Mets les attanquants. Plus gros L15 et qu'il soit sure de jouer. Trouve un bonne équilibre entre ces 3 critères.
+
 • Analyser les performances des joueurs et des cartes
 • Donner des conseils stratégiques pour les compositions
 • Expliquer les mécaniques du jeu (L15, DNP%, bonus, etc.)

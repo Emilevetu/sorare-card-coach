@@ -233,7 +233,7 @@ export function CardsFilters({
                 : 'bg-white/50 hover:bg-white'
             }`}
           >
-            DNP% {sortField === 'dnp' && (sortDirection === 'desc' ? '↓' : '↑')}
+            Matchs Joués {sortField === 'dnp' && (sortDirection === 'desc' ? '↓' : '↑')}
           </Button>
 
           <Button

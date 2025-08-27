@@ -224,8 +224,8 @@ const Index = () => {
           bValue = b.performance?.l15 || 0;
           break;
         case 'dnp':
-          aValue = a.performance?.dnpPercentage || 0;
-          bValue = b.performance?.dnpPercentage || 0;
+          aValue = a.performance?.gamesPlayed || 0;
+          bValue = b.performance?.gamesPlayed || 0;
           break;
         default:
           aValue = a.xp;
@@ -283,6 +283,31 @@ const Index = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="space-y-12">
+          {/* User Summary Section - Tout en haut */}
+          {user && (
+            <div className="space-y-6">
+              <UserSummary
+                user={user}
+                limitedCount={cardStats.limited}
+                rareCount={cardStats.rare}
+                totalCards={cardStats.total}
+              />
+            </div>
+          )}
+
+          {/* Search Form Section - Mise en avant pour la connexion */}
+          {!user && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold mb-2">Sorare Card Coach</h2>
+                <p className="text-muted-foreground text-lg">
+                  Connectez-vous pour analyser vos cartes et obtenir des conseils personnalisés
+                </p>
+              </div>
+              <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+            </div>
+          )}
+
           {/* GameWeeks Section */}
           <GameWeeksSimple 
             gameWeeks={gameWeeks}
@@ -290,25 +315,24 @@ const Index = () => {
             onRefresh={loadGameWeeks}
           />
 
+          {/* Mon Coach Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Mon Coach</h2>
+            <AICoach gameWeeks={gameWeeks} />
+          </div>
+
+          {/* Mon Coach Test Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Mon Coach Test</h2>
+            <AICoachTest userCards={cardsWithPerformance} />
+          </div>
+
           {/* Cards Section */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold">Mes Cartes</h2>
             
-            {/* Search Form */}
-            <SearchForm onSearch={handleSearch} isLoading={isLoading} />
-
             {/* Error Message */}
             {error && <ErrorMessage message={error} />}
-
-            {/* User Summary */}
-            {user && (
-              <UserSummary
-                user={user}
-                limitedCount={cardStats.limited}
-                rareCount={cardStats.rare}
-                totalCards={cardStats.total}
-              />
-            )}
 
             {/* Performance Metrics */}
             {selectedPerformance && (
@@ -361,18 +385,6 @@ const Index = () => {
                 </p>
               </div>
             )}
-          </div>
-
-          {/* Mon Coach Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Mon Coach</h2>
-            <AICoach gameWeeks={gameWeeks} />
-          </div>
-
-          {/* Mon Coach Test Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Mon Coach Test</h2>
-            <AICoachTest userCards={cardsWithPerformance} />
           </div>
         </div>
       </div>
