@@ -197,7 +197,8 @@ export function CardsTable({
         <Table>
           <TableHeader>
             <TableRow className="border-border/50 bg-muted/30">
-                              <TableHead className="font-semibold text-foreground py-4">Joueur</TableHead>
+                              <TableHead className="font-semibold text-foreground py-4 text-center">Forme</TableHead>
+              <TableHead className="font-semibold text-foreground py-4">Joueur</TableHead>
               <FilterableHeader 
                 title="Position" 
                 field="position" 
@@ -280,16 +281,15 @@ export function CardsTable({
                 onSort={onSortChange}
                 className="text-center"
               />
-              <TableHead className="font-semibold text-foreground py-4 text-center">Dernier</TableHead>
-              <TableHead className="font-semibold text-foreground py-4 text-center">-1</TableHead>
-              <TableHead className="font-semibold text-foreground py-4 text-center">-2</TableHead>
-              <TableHead className="font-semibold text-foreground py-4 text-center">-3</TableHead>
-              <TableHead className="font-semibold text-foreground py-4 text-center">-4</TableHead>
+
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentCards.map((card) => (
               <TableRow key={card.id} className="border-border/30 hover:bg-muted/50 transition-all duration-200">
+                <TableCell className="text-center">
+                  <MiniScoreChart scores={card.player.rawPlayerGameScores || []} />
+                </TableCell>
                 <TableCell className="font-medium">{card.player.displayName}</TableCell>
                 <TableCell>{card.player.position}</TableCell>
                 <TableCell className="text-center">{card.player.age}</TableCell>
@@ -326,19 +326,6 @@ export function CardsTable({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
-                {/* Scores des 5 derniers matchs */}
-                {[0, 1, 2, 3, 4].map((index) => (
-                  <TableCell key={index} className="text-center">
-                    {card.player.rawPlayerGameScores && card.player.rawPlayerGameScores[index] !== undefined ? (
-                      <span className={`font-mono text-sm font-semibold ${getPerformanceColor(card.player.rawPlayerGameScores[index])}`}>
-                        {card.player.rawPlayerGameScores[index]}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">—</span>
-                    )}
-                  </TableCell>
-                ))}
-
               </TableRow>
             ))}
           </TableBody>
@@ -409,3 +396,32 @@ export function CardsTable({
     </div>
   );
 }
+
+// Composant pour le mini-graphique des 5 derniers scores
+const MiniScoreChart = ({ scores }: { scores: number[] }) => {
+  if (!scores || scores.length === 0) {
+    return <span className="text-muted-foreground text-xs">—</span>;
+  }
+
+  const maxScore = Math.max(...scores);
+  const minScore = Math.min(...scores);
+  const range = maxScore - minScore || 1; // Éviter division par zéro
+
+  return (
+    <div className="flex items-end justify-center space-x-0.5 h-6">
+      {scores.map((score, index) => {
+        const height = maxScore > 0 ? (score / maxScore) * 16 : 0; // Hauteur max 16px
+        const color = score >= 60 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500';
+        
+        return (
+          <div
+            key={index}
+            className={`${color} rounded-sm min-w-[2px] transition-all duration-200`}
+            style={{ height: `${Math.max(2, height)}px` }}
+            title={`Score ${index + 1}: ${score}`}
+          />
+        );
+      })}
+    </div>
+  );
+};
