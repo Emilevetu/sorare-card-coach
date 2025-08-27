@@ -292,6 +292,8 @@ const Index = () => {
                 limitedCount={cardStats.limited}
                 rareCount={cardStats.rare}
                 totalCards={cardStats.total}
+                onSearch={handleSearch}
+                isLoading={isLoading}
               />
             </div>
           )}
@@ -344,19 +346,19 @@ const Index = () => {
             {cardsWithPerformance.length > 0 && (
               <div className="space-y-4">
                 {/* Search Bar */}
-                <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-sm">
-                  <div className="flex items-center gap-4">
+                <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-gray-200/50 shadow-sm">
+                  <div className="flex items-center gap-3">
                     <div className="relative flex-1">
-                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="text"
                         placeholder="Rechercher un joueur..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 text-lg border-0 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-xl outline-none"
+                        className="w-full pl-10 pr-3 py-2 text-sm border-0 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-lg outline-none"
                       />
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs text-muted-foreground">
                       {filteredAndSortedCards.length} carte(s) affichée(s) sur {cardStats.total} au total
                     </div>
                   </div>
