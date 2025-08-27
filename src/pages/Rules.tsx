@@ -11,7 +11,7 @@ export function Rules() {
       <Navigation currentPage="rules" />
       
       {/* Hero Header */}
-      <div className="bg-gradient-hero text-white py-12">
+      <div className="bg-card text-white py-12">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -29,7 +29,7 @@ export function Rules() {
         <div className="space-y-8">
           
           {/* 1. Lineup Bonuses */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Trophy className="w-6 h-6 text-sorare-blue" />
@@ -76,7 +76,7 @@ export function Rules() {
           </Card>
 
           {/* 2. Arena */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Award className="w-6 h-6 text-sorare-purple" />
@@ -124,7 +124,7 @@ export function Rules() {
           </Card>
 
           {/* 3. Hot Streaks */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <TrendingUp className="w-6 h-6 text-green-600" />
@@ -144,7 +144,7 @@ export function Rules() {
           </Card>
 
           {/* 4. Sealing */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Lock className="w-6 h-6 text-orange-600" />
@@ -163,7 +163,7 @@ export function Rules() {
           </Card>
 
           {/* 5. Collection Bonus */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Star className="w-6 h-6 text-yellow-600" />
@@ -316,7 +316,7 @@ export function Rules() {
           </Card>
 
           {/* 6. XP, Niveaux & Bonus des Cartes */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Shield className="w-6 h-6 text-blue-600" />
@@ -477,7 +477,7 @@ export function Rules() {
           </Card>
 
           {/* 7. Divisions & Multi-Entries */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Trophy className="w-6 h-6 text-sorare-blue" />
@@ -519,7 +519,7 @@ export function Rules() {
           </Card>
 
           {/* 8. Règles par compétition */}
-          <Card className="bg-gradient-card border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Trophy className="w-6 h-6 text-sorare-blue" />
@@ -822,7 +822,7 @@ export function Rules() {
           </Card>
 
           {/* Format synthétique */}
-          <Card className="bg-gradient-to-r from-sorare-blue/10 to-sorare-purple/10 border-sorare-blue/20">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="text-xl text-center">
                 📋 Format synthétique (Coach IA friendly)

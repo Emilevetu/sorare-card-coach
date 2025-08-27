@@ -28,15 +28,15 @@ interface CardsTableProps {
 function getRarityBadgeVariant(rarity: string) {
   switch (rarity) {
     case 'Limited':
-      return 'bg-sorare-blue/20 text-sorare-blue hover:bg-sorare-blue/30';
+      return 'bg-apple-green/20 text-apple-green border-apple-green/30 hover:bg-apple-green/30';
     case 'Rare':
-      return 'bg-sorare-purple/20 text-sorare-purple hover:bg-sorare-purple/30';
+      return 'bg-apple-blue/20 text-apple-blue border-apple-blue/30 hover:bg-apple-blue/30';
     case 'Super Rare':
-      return 'bg-gradient-primary text-white';
+      return 'bg-apple-orange/20 text-apple-orange border-apple-orange/30 hover:bg-apple-orange/30';
     case 'Unique':
-      return 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white';
+      return 'bg-gradient-to-r from-apple-gold to-apple-orange text-white border-apple-gold/30';
     default:
-      return 'secondary';
+      return 'bg-muted text-muted-foreground';
   }
 }
 
@@ -45,9 +45,9 @@ function formatXP(xp: number): string {
 }
 
 function getPerformanceColor(score: number): string {
-  if (score >= 60) return 'text-green-600';
-  if (score >= 40) return 'text-yellow-600';
-  return 'text-red-600';
+  if (score >= 60) return 'text-apple-green';
+  if (score >= 40) return 'text-apple-gold';
+  return 'text-apple-red';
 }
 
 
@@ -71,18 +71,18 @@ function SortableHeader({
   className?: string;
 }) {
   return (
-    <TableHead className={`font-semibold text-gray-900 py-4 cursor-pointer hover:bg-gray-100/50 transition-colors ${className}`}>
+    <TableHead className={`font-semibold text-foreground py-4 cursor-pointer hover:bg-muted/50 transition-colors ${className}`}>
       <Button
         variant="ghost"
         onClick={() => onSort(field)}
-        className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent"
+        className="h-auto p-0 font-semibold text-foreground hover:bg-transparent"
       >
         <div className="flex items-center gap-1">
           {title}
           {currentSort === field ? (
             currentDirection === 'asc' ? '↑' : '↓'
           ) : (
-            <ArrowUpDown className="w-4 h-4 text-gray-400" />
+            <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
           )}
         </div>
       </Button>
@@ -116,19 +116,19 @@ function FilterableHeader({
   className?: string;
 }) {
   return (
-    <TableHead className={`font-semibold text-gray-900 py-4 ${className}`}>
+    <TableHead className={`font-semibold text-foreground py-4 ${className}`}>
       <div className="space-y-2">
         <Button
           variant="ghost"
           onClick={() => onSort(field)}
-          className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent"
+          className="h-auto p-0 font-semibold text-foreground hover:bg-transparent"
         >
           <div className="flex items-center gap-1">
             {title}
             {currentSort === field ? (
               currentDirection === 'asc' ? '↑' : '↓'
             ) : (
-              <ArrowUpDown className="w-4 h-4 text-gray-400" />
+              <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
             )}
           </div>
         </Button>
@@ -192,12 +192,12 @@ export function CardsTable({
   }
 
   return (
-    <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
+    <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 shadow-card overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-200/50 bg-gray-50/30">
-              <TableHead className="font-semibold text-gray-900 py-4">Joueur</TableHead>
+            <TableRow className="border-border/50 bg-muted/30">
+                              <TableHead className="font-semibold text-foreground py-4">Joueur</TableHead>
               <FilterableHeader 
                 title="Position" 
                 field="position" 
@@ -221,7 +221,7 @@ export function CardsTable({
                 placeholder="Âge"
                 className="text-center"
               />
-              <TableHead className="font-semibold text-gray-900 py-4">Club</TableHead>
+              <TableHead className="font-semibold text-foreground py-4">Club</TableHead>
               <FilterableHeader 
                 title="Ligue" 
                 field="league" 
@@ -284,7 +284,7 @@ export function CardsTable({
           </TableHeader>
           <TableBody>
             {currentCards.map((card) => (
-              <TableRow key={card.id} className="border-gray-200/30 hover:bg-gray-50/50 transition-all duration-200">
+              <TableRow key={card.id} className="border-border/30 hover:bg-muted/50 transition-all duration-200">
                 <TableCell className="font-medium">{card.player.displayName}</TableCell>
                 <TableCell>{card.player.position}</TableCell>
                 <TableCell className="text-center">{card.player.age}</TableCell>
@@ -314,7 +314,7 @@ export function CardsTable({
                 </TableCell>
                 <TableCell className="text-center">
                   {card.performance ? (
-                    <span className={`font-semibold ${card.performance.gamesPlayed >= card.performance.totalGames * 0.8 ? 'text-green-600' : card.performance.gamesPlayed >= card.performance.totalGames * 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
+                    <span className={`font-semibold ${card.performance.gamesPlayed >= card.performance.totalGames * 0.8 ? 'text-apple-green' : card.performance.gamesPlayed >= card.performance.totalGames * 0.6 ? 'text-apple-gold' : 'text-apple-red'}`}>
                       {card.performance.gamesPlayed}/{card.performance.totalGames}
                     </span>
                   ) : (
@@ -330,8 +330,8 @@ export function CardsTable({
       
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between p-6 border-t border-gray-200/50 bg-gray-50/30">
-          <div className="text-sm text-gray-600 font-medium">
+        <div className="flex items-center justify-between p-6 border-t border-border/50 bg-muted/30">
+          <div className="text-sm text-muted-foreground font-medium">
             Affichage {startIndex + 1}-{Math.min(endIndex, cards.length)} sur {cards.length} cartes
           </div>
           
@@ -341,7 +341,7 @@ export function CardsTable({
               size="sm"
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="border-gray-200/50 bg-white/50 hover:bg-white rounded-lg"
+              className="border-border/50 bg-card/50 hover:bg-card rounded-lg"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -367,8 +367,8 @@ export function CardsTable({
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-8 h-8 rounded-lg ${
                       currentPage === pageNum 
-                        ? 'bg-blue-500 text-white' 
-                        : 'border-gray-200/50 bg-white/50 hover:bg-white'
+                        ? 'bg-white text-black' 
+                        : 'border-border/50 bg-card/50 hover:bg-card'
                     }`}
                   >
                     {pageNum}
@@ -382,7 +382,7 @@ export function CardsTable({
               size="sm"
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="border-gray-200/50 bg-white/50 hover:bg-white rounded-lg"
+              className="border-border/50 bg-card/50 hover:bg-card rounded-lg"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>

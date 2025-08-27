@@ -52,13 +52,13 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   function getRarityColor(rarity: string): string {
     switch (rarity.toLowerCase()) {
       case 'limited':
-        return 'bg-sorare-blue/20 text-sorare-blue';
+        return 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg';
       case 'rare':
-        return 'bg-sorare-purple/20 text-sorare-purple';
+        return 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg';
       case 'super_rare':
-        return 'bg-gradient-primary text-white';
+        return 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg';
       case 'unique':
-        return 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white';
+        return 'bg-gradient-to-r from-purple-600 to-violet-700 text-white shadow-lg';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -200,14 +200,14 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
                         ? filterNonCommonLeagues(gameWeek.leagues) 
                         : filterNonCommonLeagues(gameWeek.leagues).slice(0, 5)
                       ).map((league: { name: string; rarity: string; division?: string }, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-accent/50 rounded-lg">
+                        <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded-lg">
                           <div className="flex items-center gap-2">
                             <Users className="w-3 h-3 text-muted-foreground" />
                             <span className="text-sm font-medium">{league.name}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Badge className={`text-xs ${getRarityColor(league.rarity)}`}>
-                              {league.rarity.replace('_', ' ')}
+                              {league.rarity.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </Badge>
                             {league.division && league.division !== '1' && (
                               <Badge variant="outline" className="text-xs">

@@ -62,25 +62,41 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				'sorare-green': {
-					DEFAULT: 'hsl(var(--sorare-green))',
-					light: 'hsl(var(--sorare-green-light))',
-					dark: 'hsl(var(--sorare-green-dark))'
+				'apple-blue': {
+					DEFAULT: 'hsl(var(--apple-blue))',
+					light: 'hsl(var(--apple-blue-light))',
+					dark: 'hsl(var(--apple-blue-dark))'
 				},
-				'sorare-blue': {
-					DEFAULT: 'hsl(var(--sorare-blue))',
-					dark: 'hsl(var(--sorare-blue-dark))'
+				'apple-green': {
+					DEFAULT: 'hsl(var(--apple-green))',
+					light: 'hsl(var(--apple-green-light))',
+					dark: 'hsl(var(--apple-green-dark))'
 				},
-				'sorare-purple': 'hsl(var(--sorare-purple))'
+				'apple-orange': {
+					DEFAULT: 'hsl(var(--apple-orange))',
+					light: 'hsl(var(--apple-orange-light))',
+					dark: 'hsl(var(--apple-orange-dark))'
+				},
+				'apple-red': {
+					DEFAULT: 'hsl(var(--apple-red))',
+					light: 'hsl(var(--apple-red-light))',
+					dark: 'hsl(var(--apple-red-dark))'
+				},
+				'apple-gold': 'hsl(var(--apple-gold))',
+				'apple-silver': 'hsl(var(--apple-silver))',
+				'apple-bronze': 'hsl(var(--apple-bronze))'
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
-				'gradient-hero': 'var(--gradient-hero)'
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-glow': 'var(--gradient-glow)',
+				'gradient-apple': 'var(--gradient-apple)'
 			},
 			boxShadow: {
 				'card': 'var(--shadow-card)',
-				'elevated': 'var(--shadow-elevated)'
+				'elevated': 'var(--shadow-elevated)',
+				'glow': 'var(--shadow-glow)'
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)'

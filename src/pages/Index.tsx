@@ -263,17 +263,18 @@ const Index = () => {
       <Navigation currentPage="home" />
       
       {/* Hero Header */}
-      <div className="bg-gradient-hero text-white py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-hero text-white py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-apple opacity-20"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-apple-blue-light to-apple-green-light bg-clip-text text-transparent">
               Coach IA Sorare
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
               Analysez vos cartes Sorare et optimisez votre stratégie fantasy football
             </p>
             {dbStats.cards > 0 && (
-              <div className="mt-4 text-sm text-white/70">
+              <div className="mt-8 text-sm text-white/70 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 inline-block border border-white/20">
                 💾 {dbStats.cards} cartes sauvegardées • {dbStats.performances} performances calculées
               </div>
             )}
@@ -301,38 +302,35 @@ const Index = () => {
           {/* Search Form Section - Mise en avant pour la connexion */}
           {!user && (
             <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold mb-2">Sorare Card Coach</h2>
-                <p className="text-muted-foreground text-lg">
-                  Connectez-vous pour analyser vos cartes et obtenir des conseils personnalisés
-                </p>
-              </div>
               <SearchForm onSearch={handleSearch} isLoading={isLoading} />
             </div>
           )}
 
           {/* GameWeeks Section */}
-          <GameWeeksSimple 
-            gameWeeks={gameWeeks}
-            isLoading={isLoadingGameWeeks}
-            onRefresh={loadGameWeeks}
-          />
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-foreground">GameWeeks</h2>
+            <GameWeeksSimple 
+              gameWeeks={gameWeeks}
+              isLoading={isLoadingGameWeeks}
+              onRefresh={loadGameWeeks}
+            />
+          </div>
 
           {/* Mon Coach Section */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Mon Coach</h2>
+            <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
             <AICoach gameWeeks={gameWeeks} />
           </div>
 
           {/* Mon Coach Test Section */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Mon Coach Test</h2>
+            <h2 className="text-3xl font-bold text-foreground">Mon Coach Test</h2>
             <AICoachTest userCards={cardsWithPerformance} />
           </div>
 
           {/* Cards Section */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Mes Cartes</h2>
+            <h2 className="text-3xl font-bold text-foreground">Mes Cartes</h2>
             
             {/* Error Message */}
             {error && <ErrorMessage message={error} />}
@@ -346,16 +344,16 @@ const Index = () => {
             {cardsWithPerformance.length > 0 && (
               <div className="space-y-4">
                 {/* Search Bar */}
-                <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-gray-200/50 shadow-sm">
+                <div className="bg-card/50 backdrop-blur-sm rounded-xl p-3 border border-border/50 shadow-card">
                   <div className="flex items-center gap-3">
                     <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <input
                         type="text"
                         placeholder="Rechercher un joueur..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 text-sm border-0 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-lg outline-none"
+                        className="w-full pl-10 pr-3 py-2 text-sm border-0 bg-muted/50 focus:bg-card focus:ring-2 focus:ring-apple-blue/20 rounded-lg outline-none transition-all"
                       />
                     </div>
                     <div className="text-xs text-muted-foreground">
