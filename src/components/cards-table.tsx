@@ -1,13 +1,28 @@
-import { CardWithPerformance } from '../types/sorare';
+import { CardWithPerformance, SortField, SortDirection, PositionFilter, AgeFilter, LeagueFilter, SeasonFilter, RarityFilter } from '../types/sorare';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, ArrowUpDown, ChevronDown, Filter } from 'lucide-react';
 import { useState } from 'react';
 
 interface CardsTableProps {
   cards: CardWithPerformance[];
+  sortField: SortField;
+  sortDirection: SortDirection;
+  onSortChange: (field: SortField) => void;
+  positionFilter: PositionFilter;
+  onPositionChange: (position: PositionFilter) => void;
+  ageFilter: AgeFilter;
+  onAgeChange: (age: AgeFilter) => void;
+  leagueFilter: LeagueFilter;
+  onLeagueChange: (league: LeagueFilter) => void;
+  seasonFilter: SeasonFilter;
+  onSeasonChange: (season: SeasonFilter) => void;
+  rarityFilter: RarityFilter;
+  onRarityChange: (rarity: RarityFilter) => void;
+  availableLeagues: string[];
+  availableSeasons: string[];
 }
 
 function getRarityBadgeVariant(rarity: string) {
@@ -37,7 +52,118 @@ function getPerformanceColor(score: number): string {
 
 
 
-export function CardsTable({ cards }: CardsTableProps) {
+// Composant pour les en-têtes avec tri et filtres
+function SortableHeader({ 
+  title, 
+  field, 
+  currentSort, 
+  currentDirection, 
+  onSort, 
+  children 
+}: { 
+  title: string; 
+  field: SortField; 
+  currentSort: SortField; 
+  currentDirection: SortDirection; 
+  onSort: (field: SortField) => void; 
+  children?: React.ReactNode; 
+}) {
+  return (
+    <TableHead className="font-semibold text-gray-900 py-4 cursor-pointer hover:bg-gray-100/50 transition-colors">
+      <Button
+        variant="ghost"
+        onClick={() => onSort(field)}
+        className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent"
+      >
+        <div className="flex items-center gap-1">
+          {title}
+          {currentSort === field ? (
+            currentDirection === 'asc' ? '↑' : '↓'
+          ) : (
+            <ArrowUpDown className="w-4 h-4 text-gray-400" />
+          )}
+        </div>
+      </Button>
+      {children}
+    </TableHead>
+  );
+}
+
+// Composant pour les en-têtes avec filtres
+function FilterableHeader({ 
+  title, 
+  field, 
+  currentSort, 
+  currentDirection, 
+  onSort, 
+  filterValue, 
+  onFilterChange, 
+  options, 
+  placeholder 
+}: { 
+  title: string; 
+  field: SortField; 
+  currentSort: SortField; 
+  currentDirection: SortDirection; 
+  onSort: (field: SortField) => void; 
+  filterValue: string; 
+  onFilterChange: (value: string) => void; 
+  options: string[]; 
+  placeholder: string; 
+}) {
+  return (
+    <TableHead className="font-semibold text-gray-900 py-4">
+      <div className="space-y-2">
+        <Button
+          variant="ghost"
+          onClick={() => onSort(field)}
+          className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent"
+        >
+          <div className="flex items-center gap-1">
+            {title}
+            {currentSort === field ? (
+              currentDirection === 'asc' ? '↑' : '↓'
+            ) : (
+              <ArrowUpDown className="w-4 h-4 text-gray-400" />
+            )}
+          </div>
+        </Button>
+        <Select value={filterValue} onValueChange={onFilterChange}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">Tous</SelectItem>
+            {options.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </TableHead>
+  );
+}
+
+export function CardsTable({ 
+  cards, 
+  sortField, 
+  sortDirection, 
+  onSortChange,
+  positionFilter,
+  onPositionChange,
+  ageFilter,
+  onAgeChange,
+  leagueFilter,
+  onLeagueChange,
+  seasonFilter,
+  onSeasonChange,
+  rarityFilter,
+  onRarityChange,
+  availableLeagues,
+  availableSeasons
+}: CardsTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 12;
   const totalPages = Math.ceil(cards.length / cardsPerPage);
@@ -68,15 +194,83 @@ export function CardsTable({ cards }: CardsTableProps) {
           <TableHeader>
             <TableRow className="border-gray-200/50 bg-gray-50/30">
               <TableHead className="font-semibold text-gray-900 py-4">Joueur</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Position</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Âge</TableHead>
+              <FilterableHeader 
+                title="Position" 
+                field="position" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange}
+                filterValue={positionFilter}
+                onFilterChange={onPositionChange}
+                options={['Defender', 'Midfielder', 'Forward', 'Goalkeeper']}
+                placeholder="Position"
+              />
+              <FilterableHeader 
+                title="Âge" 
+                field="age" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange}
+                filterValue={ageFilter}
+                onFilterChange={onAgeChange}
+                options={['-23 ans']}
+                placeholder="Âge"
+              />
               <TableHead className="font-semibold text-gray-900 py-4">Club</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Ligue</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Rareté</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Saison</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4 text-right">XP</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">L15</TableHead>
-              <TableHead className="font-semibold text-gray-900 py-4">Matchs Joués</TableHead>
+              <FilterableHeader 
+                title="Ligue" 
+                field="league" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange}
+                filterValue={leagueFilter}
+                onFilterChange={onLeagueChange}
+                options={availableLeagues}
+                placeholder="Ligue"
+              />
+              <FilterableHeader 
+                title="Rareté" 
+                field="rarity" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange}
+                filterValue={rarityFilter}
+                onFilterChange={onRarityChange}
+                options={['Limited', 'Rare', 'Super Rare', 'Unique']}
+                placeholder="Rareté"
+              />
+              <FilterableHeader 
+                title="Saison" 
+                field="season" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange}
+                filterValue={seasonFilter}
+                onFilterChange={onSeasonChange}
+                options={availableSeasons}
+                placeholder="Saison"
+              />
+              <SortableHeader 
+                title="XP" 
+                field="xp" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange} 
+              />
+              <SortableHeader 
+                title="L15" 
+                field="l15" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange} 
+              />
+              <SortableHeader 
+                title="Matchs Joués" 
+                field="dnp" 
+                currentSort={sortField} 
+                currentDirection={sortDirection} 
+                onSort={onSortChange} 
+              />
             </TableRow>
           </TableHeader>
           <TableBody>

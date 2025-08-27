@@ -153,7 +153,7 @@ export interface GameWeekDetailResponse {
 
 export type RarityFilter = 'All' | 'Limited' | 'Rare' | 'Super Rare' | 'Unique';
 export type PositionFilter = 'All' | 'Forward' | 'Midfielder' | 'Defender' | 'Goalkeeper';
-export type AgeFilter = 'All' | 'U23' | 'Over23';
+export type AgeFilter = 'All' | '-23 ans' | 'Over23';
 export type LeagueFilter = 'All' | string;
 export type SeasonFilter = 'All' | string;
 export type SortField = 'xp' | 'season' | 'position' | 'age' | 'league' | 'rarity' | 'l15' | 'dnp';

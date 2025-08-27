@@ -4,8 +4,8 @@ const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
 const OpenAI = require('openai');
-// Import fetch pour Node.js
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+// Import axios pour les requêtes HTTP
+const axios = require('axios');
 const fs = require('fs');
 
 const app = express();
@@ -384,19 +384,16 @@ app.post('/api/sorare', async (req, res) => {
   try {
     const { query, variables } = req.body;
 
-    const response = await fetch('https://api.sorare.com/graphql', {
-      method: 'POST',
+    const response = await axios.post('https://api.sorare.com/graphql', {
+      query,
+      variables: variables || {}
+    }, {
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-        variables: variables || {}
-      }),
+      }
     });
 
-    const data = await response.json();
-    res.json(data);
+    res.json(response.data);
   } catch (error) {
     console.error('Erreur lors de l\'appel à l\'API Sorare:', error);
     res.status(500).json({ 

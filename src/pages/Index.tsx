@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { fetchUserCards, getDatabaseStats, fetchGameWeeks, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
 import { SorareUser, CardWithPerformance, RarityFilter, PositionFilter, AgeFilter, LeagueFilter, SeasonFilter, SortField, SortDirection, PlayerPerformance, GameWeek } from '../types/sorare';
 import { SearchForm } from '../components/search-form';
 import { UserSummary } from '../components/user-summary';
-import { CardsFilters } from '../components/cards-filters';
 import { CardsTable } from '../components/cards-table';
 import { ErrorMessage } from '../components/error-message';
 import { PerformanceMetrics } from '../components/performance-metrics';
@@ -168,11 +168,12 @@ const Index = () => {
     // Filter by age
     if (ageFilter !== 'All') {
       filtered = filtered.filter(card => {
-        if (ageFilter === 'U23') {
+        if (ageFilter === '-23 ans') {
           return card.player.age <= 23;
-        } else {
+        } else if (ageFilter === 'Over23') {
           return card.player.age > 23;
         }
+        return true;
       });
     }
 
@@ -342,12 +343,31 @@ const Index = () => {
             {/* Cards Section */}
             {cardsWithPerformance.length > 0 && (
               <div className="space-y-4">
-                {/* Filters */}
-                <CardsFilters
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  rarityFilter={rarityFilter}
-                  onRarityChange={setRarityFilter}
+                {/* Search Bar */}
+                <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Rechercher un joueur..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 text-lg border-0 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-xl outline-none"
+                      />
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {filteredAndSortedCards.length} carte(s) affichée(s) sur {cardStats.total} au total
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cards Table */}
+                <CardsTable 
+                  cards={filteredAndSortedCards}
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onSortChange={handleSortChange}
                   positionFilter={positionFilter}
                   onPositionChange={setPositionFilter}
                   ageFilter={ageFilter}
@@ -356,23 +376,10 @@ const Index = () => {
                   onLeagueChange={setLeagueFilter}
                   seasonFilter={seasonFilter}
                   onSeasonChange={setSeasonFilter}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onSortChange={handleSortChange}
+                  rarityFilter={rarityFilter}
+                  onRarityChange={setRarityFilter}
                   availableLeagues={availableLeagues}
                   availableSeasons={availableSeasons}
-                />
-
-                {/* Results Count */}
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    {filteredAndSortedCards.length} carte(s) affichée(s) sur {cardStats.total} au total
-                  </p>
-                </div>
-
-                {/* Cards Table */}
-                <CardsTable 
-                  cards={filteredAndSortedCards} 
                 />
               </div>
             )}
