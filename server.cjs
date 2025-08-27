@@ -559,7 +559,7 @@ if (process.env.NODE_ENV === 'production') {
   });
   
   // Route catch-all pour toutes les autres routes (sauf API)
-  app.get('*', (req, res) => {
+  app.get('/:path', (req, res) => {
     console.log(`🔍 Route catch-all appelée pour: ${req.path}`);
     
     // Ne pas intercepter les routes API
