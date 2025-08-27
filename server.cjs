@@ -9,22 +9,51 @@ const axios = require('axios');
 const fetch = require('node-fetch');
 const fs = require('fs');
 
+console.log('🚀 Démarrage du serveur...');
+console.log(`📋 Environnement: ${process.env.NODE_ENV || 'development'}`);
+console.log(`🔑 OpenAI API Key configurée: ${process.env.VITE_OPENAI_API_KEY ? 'Oui' : 'Non'}`);
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+console.log('🔧 Configuration des middlewares...');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
+console.log('✅ Middlewares configurés');
+
 // Servir les fichiers statiques du frontend (en production)
 if (process.env.NODE_ENV === 'production') {
-  // Servir les fichiers statiques depuis le dossier dist
-  app.use(express.static(path.join(__dirname, 'dist')));
+  console.log('📁 Configuration des fichiers statiques...');
+  const staticPath = path.join(__dirname, 'dist');
+  console.log(`📂 Chemin des fichiers statiques: ${staticPath}`);
+  
+  // Vérifier si le dossier dist existe
+  if (fs.existsSync(staticPath)) {
+    console.log('✅ Dossier dist trouvé');
+    app.use(express.static(staticPath));
+    console.log('✅ Fichiers statiques configurés');
+  } else {
+    console.log('❌ Dossier dist non trouvé');
+  }
 }
+
+console.log('🗄️ Initialisation de la base de données...');
 
 // Initialiser la base de données
 const dbPath = path.join(__dirname, 'sorare-cards.db');
-const db = new Database(dbPath);
+console.log(`📊 Chemin de la base de données: ${dbPath}`);
+
+let db;
+try {
+  db = new Database(dbPath);
+  console.log('✅ Base de données initialisée');
+} catch (error) {
+  console.error('❌ Erreur lors de l\'initialisation de la base de données:', error);
+  process.exit(1);
+}
 
 // Créer les tables si elles n'existent pas
 db.exec(`
@@ -439,6 +468,8 @@ const makeSorareAPICall = async (query, variables, maxRetries = 1) => {
   }
 };
 
+console.log('🔧 Configuration des endpoints API...');
+
 // Endpoint pour l'API Sorare
 app.post('/api/sorare', async (req, res) => {
   try {
@@ -503,6 +534,8 @@ app.post('/api/sorare', async (req, res) => {
   }
 });
 
+console.log('✅ Endpoint /api/sorare configuré');
+
 // Route de test pour vérifier que le serveur fonctionne
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -513,17 +546,34 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+console.log('✅ Endpoint /api/health configuré');
+
 // Route catch-all pour servir index.html en production (SPA routing)
 if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => {
+  console.log('🔧 Configuration des routes de production...');
+  
+  // Route spécifique pour la racine
+  app.get('/', (req, res) => {
+    console.log('📄 Servir index.html pour la racine');
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+  
+  // Route catch-all pour toutes les autres routes (sauf API)
+  app.get('*', (req, res) => {
+    console.log(`🔍 Route catch-all appelée pour: ${req.path}`);
+    
     // Ne pas intercepter les routes API
     if (req.path.startsWith('/api/')) {
+      console.log('❌ Route API détectée, retourner 404');
       return res.status(404).json({ error: 'API endpoint not found' });
     }
     
     // Servir index.html pour toutes les autres routes (SPA routing)
+    console.log('📄 Servir index.html pour SPA routing');
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
+  
+  console.log('✅ Routes de production configurées');
 }
 
 app.listen(PORT, () => {
