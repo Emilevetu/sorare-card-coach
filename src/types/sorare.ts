@@ -1,3 +1,7 @@
+export interface GameScore {
+  score: number;
+}
+
 export interface SorarePlayer {
   id: string;
   slug: string;
@@ -16,6 +20,7 @@ export interface SorarePlayer {
     };
   };
   u23Eligible: boolean;
+  rawPlayerGameScores?: number[];
 }
 
 export interface SorareCard {

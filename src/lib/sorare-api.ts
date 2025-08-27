@@ -32,12 +32,13 @@ const CARDS_QUERY = `
                 }
               }
               lastFifteenSo5Appearances
-              avgAsDef: averageScore(position: Defender, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
-              avgAsMid: averageScore(position: Midfielder, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
-              avgAsFwd: averageScore(position: Forward, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
-              avgAsGK: averageScore(position: Goalkeeper, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
-              displayName
-              age
+                          avgAsDef: averageScore(position: Defender, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
+            avgAsMid: averageScore(position: Midfielder, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
+            avgAsFwd: averageScore(position: Forward, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
+            avgAsGK: averageScore(position: Goalkeeper, type: LAST_FIFTEEN_SO5_AVERAGE_SCORE)
+            displayName
+            age
+            rawPlayerGameScores(last: 5)
             }
           }
         }

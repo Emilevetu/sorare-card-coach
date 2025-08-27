@@ -280,6 +280,11 @@ export function CardsTable({
                 onSort={onSortChange}
                 className="text-center"
               />
+              <TableHead className="font-semibold text-foreground py-4 text-center">Dernier</TableHead>
+              <TableHead className="font-semibold text-foreground py-4 text-center">-1</TableHead>
+              <TableHead className="font-semibold text-foreground py-4 text-center">-2</TableHead>
+              <TableHead className="font-semibold text-foreground py-4 text-center">-3</TableHead>
+              <TableHead className="font-semibold text-foreground py-4 text-center">-4</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -321,6 +326,18 @@ export function CardsTable({
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
+                {/* Scores des 5 derniers matchs */}
+                {[0, 1, 2, 3, 4].map((index) => (
+                  <TableCell key={index} className="text-center">
+                    {card.player.rawPlayerGameScores && card.player.rawPlayerGameScores[index] !== undefined ? (
+                      <span className={`font-mono text-sm font-semibold ${getPerformanceColor(card.player.rawPlayerGameScores[index])}`}>
+                        {card.player.rawPlayerGameScores[index]}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">—</span>
+                    )}
+                  </TableCell>
+                ))}
 
               </TableRow>
             ))}
