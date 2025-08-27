@@ -1,21 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, LogOut } from 'lucide-react';
 
 interface SearchFormProps {
   onSearch: (slug: string) => Promise<void>;
+  onLogout: () => void;
   isLoading: boolean;
+  currentUser?: string | null;
 }
 
-export function SearchForm({ onSearch, isLoading }: SearchFormProps) {
+export function SearchForm({ onSearch, onLogout, isLoading, currentUser }: SearchFormProps) {
   const [slug, setSlug] = useState('');
+
+  // Restaurer le slug depuis localStorage au chargement
+  useEffect(() => {
+    const savedSlug = localStorage.getItem('sorare_user_slug');
+    if (savedSlug) {
+      setSlug(savedSlug);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (slug.trim()) {
       await onSearch(slug.trim());
     }
+  };
+
+  const handleLogout = () => {
+    setSlug('');
+    onLogout();
   };
 
   return (
@@ -39,23 +54,38 @@ export function SearchForm({ onSearch, isLoading }: SearchFormProps) {
           </p>
         </div>
         
-        <Button 
-          type="submit" 
-          disabled={isLoading || !slug.trim()}
-          className="w-full bg-gradient-primary hover:opacity-90 transition-smooth"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Recherche en cours...
-            </>
-          ) : (
-            <>
-              <Search className="w-4 h-4 mr-2" />
-              Rechercher mes cartes
-            </>
+        <div className="flex gap-2">
+          <Button 
+            type="submit" 
+            disabled={isLoading || !slug.trim()}
+            className="flex-1 bg-gradient-primary hover:opacity-90 transition-smooth"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Recherche en cours...
+              </>
+            ) : (
+              <>
+                <Search className="w-4 h-4 mr-2" />
+                Rechercher mes cartes
+              </>
+            )}
+          </Button>
+          
+          {currentUser && (
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={handleLogout}
+              disabled={isLoading}
+              className="px-3"
+              title="Se déconnecter"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           )}
-        </Button>
+        </div>
       </form>
     </div>
   );

@@ -6,6 +6,7 @@ const path = require('path');
 const OpenAI = require('openai');
 // Import axios pour les requêtes HTTP
 const axios = require('axios');
+const fetch = require('node-fetch');
 const fs = require('fs');
 
 const app = express();
@@ -379,28 +380,120 @@ ${rulesContext}
   }
 });
 
+// Fonction pour attendre un délai
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Cache pour éviter les appels répétés
+const apiCallCache = new Map();
+const CACHE_DURATION = 60000; // 1 minute pour réduire les appels
+
+// Fonction pour faire un appel API avec retry optimisé
+const makeSorareAPICall = async (query, variables, maxRetries = 1) => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // Log seulement si c'est pas un appel en cache
+      if (attempt === 1) {
+        console.log(`🔄 Appel API Sorare...`);
+      }
+      
+      const response = await axios.post('https://api.sorare.com/graphql', {
+        query,
+        variables: variables || {}
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'SorareCardCoach/1.0'
+        },
+        timeout: 10000 // 10 secondes de timeout
+      });
+
+      if (attempt === 1) {
+        console.log(`✅ Appel API Sorare réussi`);
+      }
+      return response.data;
+      
+    } catch (error) {
+      console.error(`❌ Erreur API Sorare (tentative ${attempt}):`, error.message);
+      
+      // Si c'est une erreur 429 (rate limit), retourner une erreur immédiatement
+      if (error.response?.status === 429) {
+        console.log(`⏳ Rate limit détecté, pas de retry pour éviter les délais`);
+        throw new Error('Rate limit atteint. Veuillez réessayer dans quelques minutes.');
+      }
+      
+      // Si c'est la dernière tentative, lancer l'erreur
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Pour les autres erreurs, attendre 2 secondes
+      console.log(`⏳ Attente de 2 secondes avant nouvelle tentative...`);
+      await delay(2000);
+    }
+  }
+};
+
 // Endpoint pour l'API Sorare
 app.post('/api/sorare', async (req, res) => {
   try {
     const { query, variables } = req.body;
 
-    const response = await axios.post('https://api.sorare.com/graphql', {
-      query,
-      variables: variables || {}
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+    if (!query) {
+      return res.status(400).json({ 
+        error: 'Query manquante',
+        details: 'La requête GraphQL est requise'
+      });
+    }
 
-    res.json(response.data);
-  } catch (error) {
-    console.error('Erreur lors de l\'appel à l\'API Sorare:', error);
-    res.status(500).json({ 
-      error: 'Erreur lors de l\'appel à l\'API Sorare',
-      details: error.message,
-      stack: error.stack
+    // Créer une clé de cache basée sur la requête et les variables
+    const cacheKey = JSON.stringify({ query, variables });
+    const now = Date.now();
+    
+    // Vérifier le cache
+    const cached = apiCallCache.get(cacheKey);
+    if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+      // Log seulement une fois par minute pour éviter le spam
+      const timeSinceLastLog = now - (cached.lastLog || 0);
+      if (timeSinceLastLog > 60000) {
+        console.log('📦 Utilisation du cache (1 minute)');
+        cached.lastLog = now;
+      }
+      return res.json(cached.data);
+    }
+
+    const data = await makeSorareAPICall(query, variables);
+    
+    // Mettre en cache la réponse
+    apiCallCache.set(cacheKey, {
+      data,
+      timestamp: now
     });
+    
+    res.json(data);
+    
+  } catch (error) {
+    console.error('Erreur finale lors de l\'appel à l\'API Sorare:', error);
+    
+    // Gérer différents types d'erreurs
+    if (error.message.includes('Rate limit atteint')) {
+      res.status(429).json({ 
+        error: 'Rate limit atteint',
+        details: 'Trop de requêtes vers l\'API Sorare. Veuillez réessayer dans quelques minutes.',
+        retryAfter: 60
+      });
+    } else if (error.code === 'ECONNRESET' || error.code === 'ENOTFOUND') {
+      res.status(503).json({ 
+        error: 'Service temporairement indisponible',
+        details: 'Impossible de se connecter à l\'API Sorare. Veuillez réessayer.',
+        code: error.code
+      });
+    } else {
+      res.status(500).json({ 
+        error: 'Erreur lors de l\'appel à l\'API Sorare',
+        details: error.message,
+        code: error.code || 'UNKNOWN'
+      });
+    }
   }
 });
 

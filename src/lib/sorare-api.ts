@@ -111,7 +111,27 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: 'Erreur inconnue', details: errorText };
+        }
+        
+        // Gérer spécifiquement les erreurs de rate limit
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('retry-after');
+          throw new Error(`Rate limit atteint. Veuillez réessayer dans ${retryAfter || 60} secondes.`);
+        }
+        
+        // Gérer les erreurs de service indisponible
+        if (response.status === 503) {
+          throw new Error('Service temporairement indisponible. Veuillez réessayer dans quelques minutes.');
+        }
+        
+        // Gérer les autres erreurs
+        const errorMessage = errorData.error || errorData.details || `Erreur HTTP: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       const json: PaginatedSorareApiResponse = await response.json();
@@ -357,7 +377,28 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
     });
 
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: 'Erreur inconnue', details: errorText };
+      }
+      
+      // Gérer spécifiquement les erreurs de rate limit
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('retry-after');
+        throw new Error(`Rate limit atteint. Veuillez réessayer dans ${retryAfter || 60} secondes.`);
+      }
+      
+      // Gérer les erreurs de service indisponible
+      if (response.status === 503) {
+        throw new Error('Service temporairement indisponible. Veuillez réessayer dans quelques minutes.');
+      }
+      
+      // Gérer les autres erreurs
+      const errorMessage = errorData.error || errorData.details || `Erreur HTTP: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const json: GameWeekDetailResponse = await response.json();

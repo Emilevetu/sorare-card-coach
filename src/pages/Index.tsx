@@ -13,6 +13,27 @@ import { Navigation } from '../components/navigation';
 import { AICoach } from '../components/ai-coach';
 import { AICoachTest } from '../components/ai-coach-test';
 
+// Clés pour le localStorage
+const STORAGE_KEYS = {
+  USER_SLUG: 'sorare_user_slug',
+  USER_DATA: 'sorare_user_data',
+  CARDS_DATA: 'sorare_cards_data',
+  DB_STATS: 'sorare_db_stats',
+  FILTERS: 'sorare_filters'
+};
+
+// Interface pour les filtres sauvegardés
+interface SavedFilters {
+  searchTerm: string;
+  rarityFilter: RarityFilter;
+  positionFilter: PositionFilter;
+  ageFilter: AgeFilter;
+  leagueFilter: LeagueFilter;
+  seasonFilter: SeasonFilter;
+  sortField: SortField;
+  sortDirection: SortDirection;
+}
+
 const Index = () => {
   const [user, setUser] = useState<SorareUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,10 +56,105 @@ const Index = () => {
   const [sortField, setSortField] = useState<SortField>('xp');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  // Charger les GameWeeks au démarrage
+  // Fonction pour sauvegarder l'état dans localStorage
+  const saveState = (userData: SorareUser | null, cardsData: CardWithPerformance[], stats: { cards: number; performances: number }) => {
+    try {
+      if (userData) {
+        localStorage.setItem(STORAGE_KEYS.USER_SLUG, userData.slug);
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+        localStorage.setItem(STORAGE_KEYS.CARDS_DATA, JSON.stringify(cardsData));
+        localStorage.setItem(STORAGE_KEYS.DB_STATS, JSON.stringify(stats));
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.USER_SLUG);
+        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        localStorage.removeItem(STORAGE_KEYS.CARDS_DATA);
+        localStorage.removeItem(STORAGE_KEYS.DB_STATS);
+      }
+    } catch (error) {
+      console.warn('Impossible de sauvegarder l\'état dans localStorage:', error);
+    }
+  };
+
+  // Fonction pour sauvegarder les filtres
+  const saveFilters = () => {
+    try {
+      const filters: SavedFilters = {
+        searchTerm,
+        rarityFilter,
+        positionFilter,
+        ageFilter,
+        leagueFilter,
+        seasonFilter,
+        sortField,
+        sortDirection
+      };
+      localStorage.setItem(STORAGE_KEYS.FILTERS, JSON.stringify(filters));
+    } catch (error) {
+      console.warn('Impossible de sauvegarder les filtres dans localStorage:', error);
+    }
+  };
+
+  // Fonction pour restaurer l'état depuis localStorage
+  const restoreState = async () => {
+    try {
+      const savedSlug = localStorage.getItem(STORAGE_KEYS.USER_SLUG);
+      const savedUserData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+      const savedCardsData = localStorage.getItem(STORAGE_KEYS.CARDS_DATA);
+      const savedStats = localStorage.getItem(STORAGE_KEYS.DB_STATS);
+      const savedFilters = localStorage.getItem(STORAGE_KEYS.FILTERS);
+
+      if (savedSlug && savedUserData && savedCardsData && savedStats) {
+        const userData = JSON.parse(savedUserData);
+        const cardsData = JSON.parse(savedCardsData);
+        const stats = JSON.parse(savedStats);
+
+        setUser(userData);
+        setCardsWithPerformance(cardsData);
+        setDbStats(stats);
+
+        // Restaurer les filtres
+        if (savedFilters) {
+          const filters: SavedFilters = JSON.parse(savedFilters);
+          setSearchTerm(filters.searchTerm);
+          setRarityFilter(filters.rarityFilter);
+          setPositionFilter(filters.positionFilter);
+          setAgeFilter(filters.ageFilter);
+          setLeagueFilter(filters.leagueFilter);
+          setSeasonFilter(filters.seasonFilter);
+          setSortField(filters.sortField);
+          setSortDirection(filters.sortDirection);
+        }
+
+        console.log('✅ État restauré depuis localStorage');
+        return true;
+      }
+    } catch (error) {
+      console.warn('Erreur lors de la restauration de l\'état:', error);
+      // En cas d'erreur, nettoyer le localStorage
+      Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    }
+    return false;
+  };
+
+  // Charger les GameWeeks et restaurer l'état au démarrage
   useEffect(() => {
-    loadGameWeeks();
+    const initializeApp = async () => {
+      await loadGameWeeks();
+      await restoreState();
+    };
+    initializeApp();
   }, []);
+
+  // Sauvegarder les filtres quand ils changent (avec debounce)
+  useEffect(() => {
+    if (user) { // Ne sauvegarder que si un utilisateur est connecté
+      const timeoutId = setTimeout(() => {
+        saveFilters();
+      }, 500); // Debounce de 500ms
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchTerm, rarityFilter, positionFilter, ageFilter, leagueFilter, seasonFilter, sortField, sortDirection, user]);
 
   const loadGameWeeks = async () => {
     setIsLoadingGameWeeks(true);
@@ -71,6 +187,7 @@ const Index = () => {
 
       if (!data.user.cards.nodes || data.user.cards.nodes.length === 0) {
         setUser(data.user);
+        saveState(data.user, [], { cards: 0, performances: 0 });
         toast({
           title: "Aucune carte trouvée",
           description: "Cet utilisateur n'a aucune carte football possédée.",
@@ -96,6 +213,9 @@ const Index = () => {
       const stats = await getDatabaseStats();
       setDbStats(stats);
 
+      // Sauvegarder l'état
+      saveState(data.user, cardsWithPerf, stats);
+
       toast({
         title: "Cartes chargées avec succès",
         description: `${data.user.cards.nodes.length} cartes trouvées pour ${data.user.nickname || data.user.slug}`,
@@ -120,6 +240,29 @@ const Index = () => {
       setSortField(field);
       setSortDirection('desc');
     }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCardsWithPerformance([]);
+    setSelectedPerformance(null);
+    setError(null);
+    setSearchTerm('');
+    setRarityFilter('All');
+    setPositionFilter('All');
+    setAgeFilter('All');
+    setLeagueFilter('All');
+    setSeasonFilter('All');
+    setSortField('xp');
+    setSortDirection('desc');
+    
+    // Nettoyer le localStorage
+    saveState(null, [], { cards: 0, performances: 0 });
+    
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vos données ont été effacées.",
+    });
   };
 
   // Calculer les ligues et saisons disponibles
@@ -300,11 +443,16 @@ const Index = () => {
           )}
 
           {/* Search Form Section - Mise en avant pour la connexion */}
-          {!user && (
-            <div className="space-y-6">
-              <SearchForm onSearch={handleSearch} isLoading={isLoading} />
-            </div>
-          )}
+                                {!user && (
+                        <div className="space-y-6">
+                          <SearchForm 
+                            onSearch={handleSearch} 
+                            onLogout={handleLogout}
+                            isLoading={isLoading} 
+                            currentUser={user?.slug || null}
+                          />
+                        </div>
+                      )}
 
           {/* GameWeeks Section */}
           <div className="space-y-6">
@@ -316,21 +464,26 @@ const Index = () => {
             />
           </div>
 
-          {/* Mon Coach Section */}
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
-            <AICoach gameWeeks={gameWeeks} />
-          </div>
+                     {/* Mon Coach Section - Visible seulement si utilisateur connecté */}
+           {user && (
+             <div className="space-y-6">
+               <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
+               <AICoach gameWeeks={gameWeeks} />
+             </div>
+           )}
 
-          {/* Mon Coach Test Section */}
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-foreground">Mon Coach Test</h2>
-            <AICoachTest userCards={cardsWithPerformance} />
-          </div>
+           {/* Mon Coach Test Section - Visible seulement si utilisateur connecté */}
+           {user && (
+             <div className="space-y-6">
+               <h2 className="text-3xl font-bold text-foreground">Mon Coach Test</h2>
+               <AICoachTest userCards={cardsWithPerformance} />
+             </div>
+           )}
 
-          {/* Cards Section */}
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-foreground">Mes Cartes</h2>
+           {/* Cards Section - Visible seulement si utilisateur connecté */}
+           {user && (
+             <div className="space-y-6">
+               <h2 className="text-3xl font-bold text-foreground">Mes Cartes</h2>
             
             {/* Error Message */}
             {error && <ErrorMessage message={error} />}
@@ -393,6 +546,7 @@ const Index = () => {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
 

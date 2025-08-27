@@ -67,8 +67,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">GameWeeks à venir</h2>
+        <div className="flex items-center justify-end">
           <Button variant="outline" disabled>
             Chargement...
           </Button>
@@ -95,8 +94,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   if (!gameWeeks || gameWeeks.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">GameWeeks à venir</h2>
+        <div className="flex items-center justify-end">
           <Button variant="outline" onClick={onRefresh}>
             Actualiser
           </Button>
@@ -113,8 +111,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
   if (futureGameWeeks.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">GameWeeks à venir</h2>
+        <div className="flex items-center justify-end">
           <Button variant="outline" onClick={onRefresh}>
             Actualiser
           </Button>
@@ -153,8 +150,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">GameWeeks à venir</h2>
+      <div className="flex items-center justify-end">
         <Button variant="outline" onClick={onRefresh}>
           Actualiser
         </Button>
