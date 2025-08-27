@@ -23,8 +23,8 @@ export function AICoachTest({ userCards }: AICoachTestProps) {
     {
       id: '1',
       text: userCards && userCards.length > 0 
-        ? `Bonjour ! Je suis Pep, votre coach Sorare. J'ai accès à vos ${userCards.length} cartes et je peux vous aider à optimiser votre collection ! Comment puis-je vous aider aujourd'hui ?`
-        : 'Bonjour ! Je suis Pep, votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
+        ? `Hello Boss ! Tu veux des conseils du coach ? J'ai accès à tes ${userCards.length} cartes et je peux t'aider à optimiser ta collection ! 🔥`
+        : 'Hello Boss ! Tu veux des conseils du coach ? 💪',
       isUser: false,
       timestamp: new Date()
     }
@@ -122,8 +122,8 @@ export function AICoachTest({ userCards }: AICoachTestProps) {
                           setMessages([{
               id: '1',
               text: userCards && userCards.length > 0 
-                ? `Bonjour ! Je suis Pep, votre coach Sorare. J'ai accès à vos ${userCards.length} cartes et je peux vous aider à optimiser votre collection ! Comment puis-je vous aider aujourd'hui ?`
-                : 'Bonjour ! Je suis Pep, votre coach Sorare. Comment puis-je vous aider aujourd\'hui ?',
+                ? `Hello Boss ! Tu veux des conseils du coach ? J'ai accès à tes ${userCards.length} cartes et je peux t'aider à optimiser ta collection ! 🔥`
+                : 'Hello Boss ! Tu veux des conseils du coach ? 💪',
               isUser: false,
               timestamp: new Date()
             }]);

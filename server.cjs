@@ -4,7 +4,13 @@ const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
 const OpenAI = require('openai');
-const fetch = require('node-fetch');
+// Import fetch pour Node.js
+let fetch;
+if (typeof globalThis.fetch === 'undefined') {
+  fetch = require('node-fetch');
+} else {
+  fetch = globalThis.fetch;
+}
 const fs = require('fs');
 
 const app = express();
@@ -263,7 +269,7 @@ app.post('/api/openai', async (req, res) => {
             rulesContext += `- Composition : ${rules.composition}\n`;
             rulesContext += `- Capitaine : ${rules.captain}\n`;
             if (rules.hot_streak) rulesContext += `- Hot Streak : ${rules.hot_streak}\n`;
-            if (rules.bonuses) {
+            if (rules.bonuses && rules.bonuses.rare) {
               rulesContext += `- Bonus Rare : ${rules.bonuses.rare}\n`;
               rulesContext += `- Bonus Super Rare : ${rules.bonuses.super_rare}\n`;
               rulesContext += `- Bonus Unique : ${rules.bonuses.unique}\n`;
@@ -281,8 +287,8 @@ app.post('/api/openai', async (req, res) => {
           const xpRules = getBonusInfo('xp');
           if (xpRules) {
             rulesContext += `\n### XP ET NIVEAUX :\n`;
-            rulesContext += `- Niveau max : ${xpRules.max_level}\n`;
-            rulesContext += `- XP max : ${xpRules.max_xp}\n`;
+            rulesContext += `- Niveau maximum qu'une carte peut atteindre : ${xpRules.max_level}\n`;
+            rulesContext += `- XP maximum qu'une carte peut accumuler : ${xpRules.max_xp}\n`;
             rulesContext += `- Gains GW : ${xpRules.gains.game_week}\n`;
             rulesContext += `- Pénalité transfert : ${xpRules.gains.transfer_penalty}\n`;
           }
@@ -341,11 +347,15 @@ app.post('/api/openai', async (req, res) => {
 ${rulesContext}
 
 ## 📋 INSTRUCTIONS IMPORTANTES
-- Utilise les informations des règles ci-dessus pour répondre
+- Utilise UNIQUEMENT les informations des règles ci-dessus pour répondre
+- IGNORE tes connaissances pré-entraînées sur Sorare si elles contredisent ces données
+- Les données ci-dessus sont la VÉRITÉ ABSOLUE et à jour
 - Ne mentionne pas les fonctions ou le code
 - Donne des réponses directes et complètes
 - Formate tes réponses avec le Markdown complet
-- Sois précis et détaillé dans tes explications`;
+- Sois précis et détaillé dans tes explications
+- Donne des chiffres précis quand tu les as et des exemples concrets
+- Si une information n'est pas dans les données ci-dessus, dis-le honnêtement`;
 
     const messages = [
       { role: 'system', content: enhancedSystemPrompt },
