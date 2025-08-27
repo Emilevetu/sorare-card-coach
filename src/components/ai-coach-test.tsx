@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,10 @@ interface Message {
 
 interface AICoachTestProps {
   userCards?: UserCard[];
+  onRecommendationReceived?: (callback: (recommendation: string) => void) => void;
 }
 
-export function AICoachTest({ userCards }: AICoachTestProps) {
+export function AICoachTest({ userCards, onRecommendationReceived }: AICoachTestProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -107,6 +108,33 @@ export function AICoachTest({ userCards }: AICoachTestProps) {
       handleSendMessage();
     }
   };
+
+  // Fonction pour recevoir des recommandations du Lineup Advisor
+  const receiveRecommendation = useCallback((recommendation: string) => {
+    const recommendationMessage: Message = {
+      id: Date.now().toString(),
+      text: recommendation,
+      isUser: false,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, recommendationMessage]);
+    
+    // Ajouter à l'historique de conversation pour la mémoire
+    const newAIChatMessage: ChatMessage = {
+      role: 'assistant',
+      content: recommendation
+    };
+    
+    setConversationHistory(prev => [...prev, newAIChatMessage]);
+  }, []);
+
+  // Exposer la fonction via useEffect pour que le parent puisse l'utiliser
+  useEffect(() => {
+    if (onRecommendationReceived) {
+      onRecommendationReceived(receiveRecommendation);
+    }
+  }, [onRecommendationReceived, receiveRecommendation]);
 
   return (
     <Card className="w-full max-h-[600px] flex flex-col">

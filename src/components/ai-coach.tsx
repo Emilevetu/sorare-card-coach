@@ -4,12 +4,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GameWeek } from '@/types/sorare';
+import { callOpenAI, ChatMessage, UserCard } from '@/lib/openai-config';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface AICoachProps {
   gameWeeks: GameWeek[];
+  userCards?: UserCard[];
+  onRecommendationGenerated?: (recommendation: string) => void;
 }
 
-export function AICoach({ gameWeeks }: AICoachProps) {
+export function AICoach({ gameWeeks, userCards, onRecommendationGenerated }: AICoachProps) {
   // Données de GameWeeks hardcodées avec les vraies données de l'API Sorare (complètes)
   const HARDCODED_GAMEWEEKS: GameWeek[] = [
     {
@@ -255,6 +260,8 @@ export function AICoach({ gameWeeks }: AICoachProps) {
   const availableGameWeeks = HARDCODED_GAMEWEEKS;
   const [selectedGameWeek, setSelectedGameWeek] = useState<string>('');
   const [selectedCompetition, setSelectedCompetition] = useState<string>('');
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([]);
 
   // Fonction pour obtenir la couleur de rareté
   function getRarityColor(rarity: string): string {
@@ -291,7 +298,7 @@ export function AICoach({ gameWeeks }: AICoachProps) {
     setSelectedCompetition(''); // Reset la compétition sélectionnée
   };
 
-  const handleGetRecommendations = () => {
+  const handleGetRecommendations = async () => {
     if (!selectedGameWeek || !selectedCompetition) {
       alert('Veuillez sélectionner une GameWeek et une compétition');
       return;
@@ -309,8 +316,45 @@ export function AICoach({ gameWeeks }: AICoachProps) {
       }
     });
     
-    // TODO: Implémenter la logique de recommandations IA
-    alert(`Fonctionnalité de recommandations IA à venir !\n\nGameWeek: ${selectedGameWeek}\nCompétition: ${competitionName} (${rarity} - D${division})`);
+    setIsLoadingRecommendations(true);
+    
+    try {
+      // Construire la question pour l'IA
+      const question = `propose moi la meilleur line-up pour la compétition ${competitionName} (${rarity} - D${division}) et justifie tes choix`;
+      
+      // Ajouter le message utilisateur à l'historique
+      const newUserChatMessage: ChatMessage = {
+        role: 'user',
+        content: question
+      };
+      
+      const updatedHistory = [...conversationHistory, newUserChatMessage];
+      setConversationHistory(updatedHistory);
+
+      // Appeler l'API OpenAI avec les cartes utilisateur
+      const aiResponse = await callOpenAI(question, updatedHistory, userCards);
+
+      // Ajouter la réponse de l'IA à l'historique
+      const newAIChatMessage: ChatMessage = {
+        role: 'assistant',
+        content: aiResponse
+      };
+      
+      setConversationHistory([...updatedHistory, newAIChatMessage]);
+      
+      // Envoyer les recommandations au chat au lieu de les afficher localement
+      if (onRecommendationGenerated) {
+        onRecommendationGenerated(aiResponse);
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'appel OpenAI:', error);
+      if (onRecommendationGenerated) {
+        onRecommendationGenerated('Désolé, une erreur s\'est produite lors de la génération des recommandations. Veuillez réessayer.');
+      }
+    } finally {
+      setIsLoadingRecommendations(false);
+    }
   };
 
   return (
@@ -374,10 +418,19 @@ export function AICoach({ gameWeeks }: AICoachProps) {
 
         <Button 
           onClick={handleGetRecommendations}
-          disabled={!selectedGameWeek || !selectedCompetition}
+          disabled={!selectedGameWeek || !selectedCompetition || isLoadingRecommendations}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
-          🎯 Recevoir les recommandations du coach
+          {isLoadingRecommendations ? (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Génération des recommandations...
+              </div>
+            </>
+          ) : (
+            '🎯 Recevoir les recommandations du coach'
+          )}
         </Button>
       </CardContent>
     </Card>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { fetchUserCards, getDatabaseStats, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
@@ -20,6 +20,7 @@ const Index = () => {
   const [cardsWithPerformance, setCardsWithPerformance] = useState<CardWithPerformance[]>([]);
   const [selectedPerformance, setSelectedPerformance] = useState<PlayerPerformance | null>(null);
   const [dbStats, setDbStats] = useState<{ cards: number; performances: number }>({ cards: 0, performances: 0 });
+  const [chatCallback, setChatCallback] = useState<((recommendation: string) => void) | null>(null);
   
   // GameWeeks state
   // Les GameWeeks sont maintenant hardcodées dans le composant GameWeeksSimple
@@ -111,6 +112,7 @@ const Index = () => {
     setSelectedPerformance(null);
     setError(null);
     setDbStats({ cards: 0, performances: 0 });
+    setChatCallback(null);
     // Reset filters
     setSearchTerm('');
     setRarityFilter('All');
@@ -121,6 +123,18 @@ const Index = () => {
     setSortField('xp');
     setSortDirection('desc');
   };
+
+  // Fonction pour recevoir le callback du chat
+  const handleChatCallback = useCallback((callback: (recommendation: string) => void) => {
+    setChatCallback(() => callback);
+  }, []);
+
+  // Fonction pour envoyer les recommandations au chat
+  const handleRecommendationGenerated = useCallback((recommendation: string) => {
+    if (chatCallback) {
+      chatCallback(recommendation);
+    }
+  }, [chatCallback]);
 
   // Calculer les ligues et saisons disponibles
   const availableLeagues = useMemo(() => {
@@ -320,8 +334,15 @@ const Index = () => {
            {user && (
              <div className="space-y-4">
                <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
-               <AICoach gameWeeks={[]} />
-               <AICoachTest userCards={cardsWithPerformance} />
+               <AICoach 
+                 gameWeeks={[]} 
+                 userCards={cardsWithPerformance} 
+                 onRecommendationGenerated={handleRecommendationGenerated}
+               />
+               <AICoachTest 
+                 userCards={cardsWithPerformance} 
+                 onRecommendationReceived={handleChatCallback}
+               />
              </div>
            )}
 
