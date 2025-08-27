@@ -515,7 +515,7 @@ app.get('/api/health', (req, res) => {
 
 // Route catch-all pour servir index.html en production (SPA routing)
 if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
+  app.get('/*', (req, res) => {
     // Ne pas intercepter les routes API
     if (req.path.startsWith('/api/')) {
       return res.status(404).json({ error: 'API endpoint not found' });
