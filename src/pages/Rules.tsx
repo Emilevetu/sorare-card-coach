@@ -170,53 +170,308 @@ export function Rules() {
                 5. Collection Bonus
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="bg-accent/50 rounded-lg p-4">
-                <p>
-                  Si tu possèdes une carte pendant au moins <strong>30 jours</strong> sans la lister sur le marché, tu obtiens un bonus de <Badge variant="secondary" className="font-bold">+20 points</Badge> ajoutés à son score.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 6. Bonus de Capitaine, de Niveau & New-Season */}
-          <Card className="bg-gradient-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Shield className="w-6 h-6 text-blue-600" />
-                6. Bonus de Capitaine, de Niveau & New-Season (NSP)
-              </CardTitle>
-            </CardHeader>
             <CardContent className="space-y-6">
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2">Bonus de capitaine</h4>
-                  <p className="text-sm">Peut être <strong>0%</strong>, <strong>20%</strong> ou <strong>50%</strong> selon la compétition</p>
-                </div>
+              {/* Principe général */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-600" />
+                  📘 Sorare – Collection Rules & Bonuses
+                </h3>
                 
                 <div className="bg-accent/50 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2">Bonus de niveau (XP)</h4>
-                  <p className="text-sm">Dépend du niveau de la carte (XP accumulé) et de sa rareté</p>
-                </div>
-                
-                <div className="bg-accent/50 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2">New‑Season Bonus (NSP)</h4>
-                  <p className="text-sm">Cartes de la saison en cours bénéficient de <strong>+5%</strong></p>
+                  <h4 className="font-semibold mb-3">🔹 Principe général</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Chaque club licencié possède 1 collection par saison et rareté (sauf Common, non éligibles)</li>
+                    <li>• Un album de collection = toutes les cartes d'un club spécifique pour une saison donnée (par rareté)</li>
+                    <li>• Les cartes ajoutées donnent un Score de Collection, qui débloque un Bonus de Collection pour toutes les cartes de cet album</li>
+                    <li>• ⚠️ 1 seule carte par joueur par album (pas de doublons). Si plusieurs versions existent, seule la carte avec le score le plus élevé compte</li>
+                  </ul>
                 </div>
               </div>
 
               <Separator />
 
-              <div className="bg-accent/50 rounded-lg p-4">
-                <h4 className="font-semibold mb-3">XP et niveaux :</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>• XP se gagne chaque semaine selon performance ou événements spéciaux</li>
-                  <li>• Il existe un plafond de <strong>30 000 XP</strong> par rareté</li>
-                  <li>• Le score de base (sans bonus) d'une composition permet de générer de l'XP divisé par 5</li>
-                  <li>• <strong>Attention :</strong> si une carte est vendue, son XP chute de 50%</li>
-                  <li>• Après un level-up, il y a une période de cooldown avant de pouvoir monter une nouvelle fois</li>
-                </ul>
+              {/* Score de Collection */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Comment est calculé le Score de Collection (par carte)</h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="mb-3">Chaque carte reçoit un score selon la Scoring Matrix :</p>
+                  <ul className="space-y-2 text-sm">
+                    <li>• <strong>Baseline</strong> (toutes les cartes) : <Badge variant="secondary">+10 pts</Badge></li>
+                    <li>• <strong>#1 Serial number</strong> (ex: carte n°1/100) : <Badge variant="secondary">+30 pts</Badge></li>
+                    <li>• <strong>Serial = Jersey number</strong> (ex: carte n°10/100 pour un joueur qui porte le 10) : <Badge variant="secondary">+30 pts</Badge></li>
+                    <li>• <strong>Special Card Edition</strong> (rookie, anniversaire, animée…) : <Badge variant="secondary">+20 pts</Badge></li>
+                    <li>• <strong>One-owner card</strong> (jamais vendue depuis le mint) : <Badge variant="secondary">+20 pts</Badge></li>
+                    <li>• <strong>Non listée / pas transférée depuis 30 jours</strong> : <Badge variant="secondary">+20 pts</Badge></li>
+                  </ul>
+                </div>
+
+                <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/20">
+                  <h4 className="font-semibold mb-3 text-red-700">⚠️ Restrictions :</h4>
+                  <ul className="space-y-1 text-sm">
+                    <li>• Les cartes mises en vente, transférées ou incluses dans un trade au cours des 90 derniers jours → perdent le dernier bonus de +20 pts</li>
+                    <li>• Les cartes listées actuellement ne reçoivent aucun score de collection (score redémarre quand elles sont retirées du marché)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Bonus de Collection */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Bonus de Collection (album entier)</h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="mb-3">Une fois le score total d'un album calculé, on applique le Bonus % suivant à toutes les cartes de l'album en compétition :</p>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="border border-border px-3 py-2 text-left font-semibold">Album Total Score</th>
+                          <th className="border border-border px-3 py-2 text-left font-semibold">Collection Bonus appliqué</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td className="border border-border px-3 py-2">0 – 34 pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">0%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">35 – 99 pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">+1%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">100 – 249 pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">+2%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">250 – 499 pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">+3%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">500 – 749 pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">+4%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">750+ pts</td><td className="border border-border px-3 py-2"><Badge variant="outline">+5%</Badge></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Règles spéciales */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Règles spéciales</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Special Edition Bonus</h4>
+                    <p className="text-sm">Certaines éditions spéciales (Rookie, animée, etc.) ajoutent +20 pts au score. ⚠️ Non cumulatif → si une carte combine plusieurs éditions spéciales, seul un +20 pts max est appliqué.</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Transferts & ventes</h4>
+                    <p className="text-sm">Si tu vends/échanges une carte, son score redémarre.</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Eligibilité</h4>
+                    <p className="text-sm">Une carte garde son bonus uniquement pour le club affiché sur sa carte. Si le joueur change de club, elle reste liée à l'ancien.</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Durée de détention</h4>
+                    <p className="text-sm">Plus tu gardes une carte sans la vendre/lister, plus tu conserves son plein score de collection.</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Exemple concret */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Exemple concret</h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <p className="mb-3">Supposons un album "PSG Limited 2025" avec 5 cartes :</p>
+                  
+                  <div className="space-y-3">
+                    <div className="bg-green-500/10 rounded p-3 border border-green-500/20">
+                      <p className="text-sm"><strong>Mbappé Rookie</strong> (#1/100, pas listée, 1 seul propriétaire) → 10 + 30 + 20 + 20 + 20 = <Badge variant="secondary">100 pts</Badge></p>
+                    </div>
+                    
+                    <div className="bg-yellow-500/10 rounded p-3 border border-yellow-500/20">
+                      <p className="text-sm"><strong>Hakimi carte simple</strong> (#23/100, listée récemment) → <Badge variant="secondary">10 pts</Badge></p>
+                    </div>
+                    
+                    <div className="bg-blue-500/10 rounded p-3 border border-blue-500/20">
+                      <p className="text-sm"><strong>Donnarumma carte spéciale Anniversary</strong>, non listée → 10 + 20 + 20 = <Badge variant="secondary">50 pts</Badge></p>
+                    </div>
+                    
+                    <div className="bg-purple-500/10 rounded p-3 border border-purple-500/20">
+                      <p className="text-sm"><strong>Vitinha carte #17/100</strong> (jersey = 17), non listée → 10 + 30 + 20 = <Badge variant="secondary">60 pts</Badge></p>
+                    </div>
+                    
+                    <div className="bg-gray-500/10 rounded p-3 border border-gray-500/20">
+                      <p className="text-sm"><strong>Marquinhos carte simple</strong>, vendue plusieurs fois → <Badge variant="secondary">10 pts</Badge></p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded border border-green-500/30">
+                    <p className="text-sm font-semibold">Score total album = 230 pts → <Badge variant="secondary" className="font-bold">Bonus de +2%</Badge> appliqué à toutes ces cartes en compétition</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 6. XP, Niveaux & Bonus des Cartes */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Shield className="w-6 h-6 text-blue-600" />
+                6. XP, Niveaux & Bonus des Cartes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              {/* Principe général */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  📘 Sorare – XP, Niveaux & Bonus des Cartes
+                </h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <h4 className="font-semibold mb-3">🔹 Principe général</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Les cartes gagnent de l'XP quand elles participent à des compétitions</li>
+                    <li>• L'XP sert à faire monter de niveau les cartes → chaque niveau donne un bonus de % appliqué au score du joueur</li>
+                    <li>• L'XP est spécifique au sport et à la rareté (ex: une carte Limited et une Rare du même joueur n'ont pas le même XP)</li>
+                    <li>• Plafond : <Badge variant="secondary">30 000 XP max</Badge> par rareté</li>
+                  </ul>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Comment gagner de l'XP */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Comment gagner de l'XP</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">En jouant une Game Week</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• <strong>Formule :</strong> (score de base total de l'équipe / 5) → distribué en XP à chaque carte de l'équipe</li>
+                      <li>• Le score de base = score sans bonus (pas d'XP, pas de collection, pas de capitaine)</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">En récompense de classement</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• Dans les compétitions In-Season, les équipes classées entre top 30% et top 50% reçoivent <Badge variant="secondary">500 XP</Badge></li>
+                      <li>• Événements spéciaux : Sorare distribue parfois de l'XP additionnel via missions / défis</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Barème XP & niveaux */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Barème XP & niveaux</h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="border border-border px-3 py-2 text-left font-semibold">Level</th>
+                          <th className="border border-border px-3 py-2 text-left font-semibold">XP to next level</th>
+                          <th className="border border-border px-3 py-2 text-left font-semibold">XP Accumulé</th>
+                          <th className="border border-border px-3 py-2 text-left font-semibold">Cooldown avant up suivant</th>
+                          <th className="border border-border px-3 py-2 text-left font-semibold">Bonus XP</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td className="border border-border px-3 py-2">0</td><td className="border border-border px-3 py-2">0</td><td className="border border-border px-3 py-2">0</td><td className="border border-border px-3 py-2">–</td><td className="border border-border px-3 py-2"><Badge variant="outline">0%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">1</td><td className="border border-border px-3 py-2">200</td><td className="border border-border px-3 py-2">200</td><td className="border border-border px-3 py-2">1 jour</td><td className="border border-border px-3 py-2"><Badge variant="outline">+1%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">2</td><td className="border border-border px-3 py-2">400</td><td className="border border-border px-3 py-2">600</td><td className="border border-border px-3 py-2">1 semaine</td><td className="border border-border px-3 py-2"><Badge variant="outline">+2%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">3</td><td className="border border-border px-3 py-2">600</td><td className="border border-border px-3 py-2">1200</td><td className="border border-border px-3 py-2">2 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+3%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">4</td><td className="border border-border px-3 py-2">1000</td><td className="border border-border px-3 py-2">2200</td><td className="border border-border px-3 py-2">2 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+4%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">5</td><td className="border border-border px-3 py-2">1500</td><td className="border border-border px-3 py-2">3700</td><td className="border border-border px-3 py-2">2 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+5%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">6</td><td className="border border-border px-3 py-2">2000</td><td className="border border-border px-3 py-2">5700</td><td className="border border-border px-3 py-2">2 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+6%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">7</td><td className="border border-border px-3 py-2">3000</td><td className="border border-border px-3 py-2">8700</td><td className="border border-border px-3 py-2">4 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+7%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">8</td><td className="border border-border px-3 py-2">5000</td><td className="border border-border px-3 py-2">13700</td><td className="border border-border px-3 py-2">4 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+8%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">9</td><td className="border border-border px-3 py-2">7500</td><td className="border border-border px-3 py-2">21200</td><td className="border border-border px-3 py-2">6 semaines</td><td className="border border-border px-3 py-2"><Badge variant="outline">+9%</Badge></td></tr>
+                        <tr><td className="border border-border px-3 py-2">10</td><td className="border border-border px-3 py-2">10000</td><td className="border border-border px-3 py-2">31200</td><td className="border border-border px-3 py-2">–</td><td className="border border-border px-3 py-2"><Badge variant="outline">+10%</Badge></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-blue-500/10 rounded border border-blue-500/20">
+                    <p className="text-sm"><strong>Cooldown :</strong> après chaque montée de niveau, une carte doit patienter un certain temps avant de pouvoir monter à nouveau.</p>
+                    <p className="text-sm"><strong>Max Bonus XP :</strong> <Badge variant="secondary">+10%</Badge> au niveau 10.</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Impact des transferts */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Impact des transferts sur l'XP</h3>
+                
+                <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/20">
+                  <p className="text-sm">Lorsqu'une carte est vendue ou échangée sur le marché secondaire :</p>
+                  <ul className="space-y-1 text-sm mt-2">
+                    <li>• Elle perd <Badge variant="secondary">50% de son XP accumulé</Badge></li>
+                    <li>• Son niveau est donc ajusté en conséquence</li>
+                  </ul>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Autres Bonus cumulables */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Autres Bonus cumulables avec XP</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Capitaine</h4>
+                    <p className="text-sm">Selon la compétition, <Badge variant="outline">+0%</Badge>, <Badge variant="outline">+20%</Badge> ou <Badge variant="outline">+50%</Badge>.</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">New Season Bonus (NSP)</h4>
+                    <p className="text-sm">Cartes de la saison en cours → <Badge variant="secondary">+5%</Badge>.</p>
+                    <p className="text-sm mt-1">⚠️ Expire 11 jours avant le premier match de la saison suivante.</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Collection Bonus</h4>
+                    <p className="text-sm">Dépend du score de collection de ton album (<Badge variant="outline">0%</Badge> → <Badge variant="outline">+5%</Badge>).</p>
+                  </div>
+                  
+                  <div className="bg-accent/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Bonus de rareté</h4>
+                    <ul className="space-y-1 text-sm">
+                      <li>• <strong>Rare</strong> → <Badge variant="outline">+10%</Badge></li>
+                      <li>• <strong>Super Rare</strong> → <Badge variant="outline">+20%</Badge></li>
+                      <li>• <strong>Unique</strong> → <Badge variant="outline">+40%</Badge></li>
+                    </ul>
+                    <p className="text-sm mt-1">(Appliqué selon la compétition)</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Statut In-Season */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">🔹 Statut In-Season</h3>
+                
+                <div className="bg-accent/50 rounded-lg p-4">
+                  <ul className="space-y-2 text-sm">
+                    <li>• Une carte est In-Season tant que la saison de la ligue de son club est active</li>
+                    <li>• Perte du statut : 11 jours avant le premier match de la nouvelle saison de la ligue</li>
+                    <li>• Quand une carte perd son statut In-Season → elle devient Classic Season et perd son NSP (<Badge variant="secondary">+5%</Badge>)</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
