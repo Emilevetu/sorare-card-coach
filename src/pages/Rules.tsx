@@ -11,10 +11,11 @@ export function Rules() {
       <Navigation currentPage="rules" />
       
       {/* Hero Header */}
-      <div className="bg-card text-white py-12">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-hero text-white py-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-apple opacity-20"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-black">
               Règles du Jeu Sorare
             </h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
@@ -44,7 +45,7 @@ export function Rules() {
                   <Target className="w-5 h-5 text-green-600" />
                   Cap Bonus
                 </h3>
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                   <p className="mb-2">
                     Obtiens un bonus de <Badge variant="secondary" className="font-bold">+4%</Badge> sur le score total de ta composition si la somme des scores L15 des joueurs reste strictement inférieure ou égale à :
                   </p>
@@ -63,7 +64,7 @@ export function Rules() {
                   <Users className="w-5 h-5 text-blue-600" />
                   Multi‑Club Bonus
                 </h3>
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                   <p className="mb-2">
                     Obtiens un bonus de <Badge variant="secondary" className="font-bold">+2%</Badge> si ta composition contient au maximum deux joueurs du même club.
                   </p>
@@ -88,7 +89,7 @@ export function Rules() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Arena Capped */}
-                <div className="bg-accent/50 rounded-lg p-4 border border-border">
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
                   <h3 className="text-lg font-semibold mb-3 text-center">Arena Capped</h3>
                   <ul className="space-y-2 text-sm">
                     <li>• <strong>Cap ≤ 260 L15</strong></li>
@@ -98,7 +99,7 @@ export function Rules() {
                 </div>
 
                 {/* Arena Uncapped */}
-                <div className="bg-accent/50 rounded-lg p-4 border border-border">
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
                   <h3 className="text-lg font-semibold mb-3 text-center">Arena Uncapped</h3>
                   <ul className="space-y-2 text-sm">
                     <li>• <strong>Pas de cap</strong></li>
@@ -132,7 +133,7 @@ export function Rules() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-accent/50 rounded-lg p-4">
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                 <ul className="space-y-2">
                   <li>• Disponible dans toutes les compétitions <strong>In-Season</strong> (Limited & Rare)</li>
                   <li>• Fonctionne sur système de <strong>paliers de points</strong> : plus tu atteins de points dans une GW, plus tu gagnes de cash (ou ETH) et tu montes de "niveau"</li>
@@ -152,7 +153,7 @@ export function Rules() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-accent/50 rounded-lg p-4">
+              <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
                 <ul className="space-y-2">
                   <li>• Tu peux verrouiller des cartes (Lock / "Sealing"), ce qui les rend non modifiables ni échangeables</li>
                   <li>• Cela contribue à ton "niveau de Sealing"</li>
@@ -179,7 +180,7 @@ export function Rules() {
                   📘 Sorare – Collection Rules & Bonuses
                 </h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                   <h4 className="font-semibold mb-3">🔹 Principe général</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• Chaque club licencié possède 1 collection par saison et rareté (sauf Common, non éligibles)</li>
@@ -196,7 +197,7 @@ export function Rules() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">🔹 Comment est calculé le Score de Collection (par carte)</h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                   <p className="mb-3">Chaque carte reçoit un score selon la Scoring Matrix :</p>
                   <ul className="space-y-2 text-sm">
                     <li>• <strong>Baseline</strong> (toutes les cartes) : <Badge variant="secondary">+10 pts</Badge></li>
@@ -223,7 +224,7 @@ export function Rules() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">🔹 Bonus de Collection (album entier)</h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                   <p className="mb-3">Une fois le score total d'un album calculé, on applique le Bonus % suivant à toutes les cartes de l'album en compétition :</p>
                   
                   <div className="overflow-x-auto">
@@ -254,22 +255,22 @@ export function Rules() {
                 <h3 className="text-lg font-semibold">🔹 Règles spéciales</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                     <h4 className="font-semibold mb-2">Special Edition Bonus</h4>
                     <p className="text-sm">Certaines éditions spéciales (Rookie, animée, etc.) ajoutent +20 pts au score. ⚠️ Non cumulatif → si une carte combine plusieurs éditions spéciales, seul un +20 pts max est appliqué.</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                     <h4 className="font-semibold mb-2">Transferts & ventes</h4>
                     <p className="text-sm">Si tu vends/échanges une carte, son score redémarre.</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                     <h4 className="font-semibold mb-2">Eligibilité</h4>
                     <p className="text-sm">Une carte garde son bonus uniquement pour le club affiché sur sa carte. Si le joueur change de club, elle reste liée à l'ancien.</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                     <h4 className="font-semibold mb-2">Durée de détention</h4>
                     <p className="text-sm">Plus tu gardes une carte sans la vendre/lister, plus tu conserves son plein score de collection.</p>
                   </div>
@@ -282,7 +283,7 @@ export function Rules() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">🔹 Exemple concret</h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                   <p className="mb-3">Supposons un album "PSG Limited 2025" avec 5 cartes :</p>
                   
                   <div className="space-y-3">
@@ -332,7 +333,7 @@ export function Rules() {
                   📘 Sorare – XP, Niveaux & Bonus des Cartes
                 </h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                   <h4 className="font-semibold mb-3">🔹 Principe général</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• Les cartes gagnent de l'XP quand elles participent à des compétitions</li>
@@ -350,7 +351,7 @@ export function Rules() {
                 <h3 className="text-lg font-semibold">🔹 Comment gagner de l'XP</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">En jouant une Game Week</h4>
                     <ul className="space-y-2 text-sm">
                       <li>• <strong>Formule :</strong> (score de base total de l'équipe / 5) → distribué en XP à chaque carte de l'équipe</li>
@@ -358,7 +359,7 @@ export function Rules() {
                     </ul>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">En récompense de classement</h4>
                     <ul className="space-y-2 text-sm">
                       <li>• Dans les compétitions In-Season, les équipes classées entre top 30% et top 50% reçoivent <Badge variant="secondary">500 XP</Badge></li>
@@ -374,7 +375,7 @@ export function Rules() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">🔹 Barème XP & niveaux</h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm border-collapse">
                       <thead>
@@ -431,23 +432,23 @@ export function Rules() {
                 <h3 className="text-lg font-semibold">🔹 Autres Bonus cumulables avec XP</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">Capitaine</h4>
                     <p className="text-sm">Selon la compétition, <Badge variant="outline">+0%</Badge>, <Badge variant="outline">+20%</Badge> ou <Badge variant="outline">+50%</Badge>.</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">New Season Bonus (NSP)</h4>
                     <p className="text-sm">Cartes de la saison en cours → <Badge variant="secondary">+5%</Badge>.</p>
                     <p className="text-sm mt-1">⚠️ Expire 11 jours avant le premier match de la saison suivante.</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">Collection Bonus</h4>
                     <p className="text-sm">Dépend du score de collection de ton album (<Badge variant="outline">0%</Badge> → <Badge variant="outline">+5%</Badge>).</p>
                   </div>
                   
-                  <div className="bg-accent/50 rounded-lg p-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <h4 className="font-semibold mb-2">Bonus de rareté</h4>
                     <ul className="space-y-1 text-sm">
                       <li>• <strong>Rare</strong> → <Badge variant="outline">+10%</Badge></li>
@@ -465,7 +466,7 @@ export function Rules() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">🔹 Statut In-Season</h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                   <ul className="space-y-2 text-sm">
                     <li>• Une carte est In-Season tant que la saison de la ligue de son club est active</li>
                     <li>• Perte du statut : 11 jours avant le premier match de la nouvelle saison de la ligue</li>
@@ -486,7 +487,7 @@ export function Rules() {
             </CardHeader>
             <CardContent className="space-y-6">
               
-              <div className="bg-accent/50 rounded-lg p-4">
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                 <p className="mb-3">
                   Tu peux envoyer jusqu'à <strong>4 compositions</strong> par compétition (In-Season ou Classic) dès le début de la saison (possibilité débloquée par défaut).
                 </p>
@@ -534,7 +535,7 @@ export function Rules() {
                   🎮 Arena
                 </h3>
                 
-                <div className="bg-accent/50 rounded-lg p-4">
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
                   <h4 className="font-semibold mb-3">Règles générales</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• <strong>Format :</strong> SO5 (5 cartes dont 1 capitaine)</li>

@@ -421,12 +421,37 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Cache pour éviter les appels répétés
 const apiCallCache = new Map();
 const CACHE_DURATION = 60000; // 1 minute pour réduire les appels
+const RATE_LIMIT_CACHE_DURATION = 600000; // 10 minutes pour les erreurs de rate limit
 
 // Fonction pour faire un appel API avec retry optimisé
 const makeSorareAPICall = async (query, variables, maxRetries = 1) => {
+  // Créer une clé de cache basée sur la requête et les variables
+  const cacheKey = JSON.stringify({ query, variables });
+  const now = Date.now();
+  
+  // Vérifier le cache d'abord
+  const cached = apiCallCache.get(cacheKey);
+  if (cached) {
+    // Si c'est une erreur 429, attendre plus longtemps
+    if (cached.isRateLimit && (now - cached.timestamp) < RATE_LIMIT_CACHE_DURATION) {
+      console.log('🚫 Cache rate limit actif (10 min)');
+      throw new Error('Rate limit atteint. Veuillez réessayer dans quelques minutes.');
+    }
+    // Cache normal
+    if ((now - cached.timestamp) < CACHE_DURATION) {
+      // Log seulement une fois par minute pour éviter le spam
+      const timeSinceLastLog = now - (cached.lastLog || 0);
+      if (timeSinceLastLog > 60000) {
+        console.log('📦 Utilisation du cache (5 min)');
+        cached.lastLog = now;
+      }
+      return cached.data;
+    }
+  }
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // Log seulement si c'est pas un appel en cache
+      // Log seulement si c'est pas un appel en cache et première tentative
       if (attempt === 1) {
         console.log(`🔄 Appel API Sorare...`);
       }
@@ -445,14 +470,25 @@ const makeSorareAPICall = async (query, variables, maxRetries = 1) => {
       if (attempt === 1) {
         console.log(`✅ Appel API Sorare réussi`);
       }
+      
+      // Mettre en cache la réponse réussie
+      apiCallCache.set(cacheKey, {
+        data: response.data,
+        timestamp: now,
+        isRateLimit: false
+      });
+      
       return response.data;
       
     } catch (error) {
-      console.error(`❌ Erreur API Sorare (tentative ${attempt}):`, error.message);
-      
-      // Si c'est une erreur 429 (rate limit), retourner une erreur immédiatement
+      // Log seulement les erreurs importantes
       if (error.response?.status === 429) {
-        console.log(`⏳ Rate limit détecté, pas de retry pour éviter les délais`);
+        console.log(`⏳ Rate limit détecté, mise en cache pour 10 minutes`);
+        apiCallCache.set(cacheKey, {
+          data: null,
+          timestamp: now,
+          isRateLimit: true
+        });
         throw new Error('Rate limit atteint. Veuillez réessayer dans quelques minutes.');
       }
       
@@ -461,8 +497,7 @@ const makeSorareAPICall = async (query, variables, maxRetries = 1) => {
         throw error;
       }
       
-      // Pour les autres erreurs, attendre 2 secondes
-      console.log(`⏳ Attente de 2 secondes avant nouvelle tentative...`);
+      // Pour les autres erreurs, attendre 2 secondes sans log
       await delay(2000);
     }
   }
@@ -482,29 +517,7 @@ app.post('/api/sorare', async (req, res) => {
       });
     }
 
-    // Créer une clé de cache basée sur la requête et les variables
-    const cacheKey = JSON.stringify({ query, variables });
-    const now = Date.now();
-    
-    // Vérifier le cache
-    const cached = apiCallCache.get(cacheKey);
-    if (cached && (now - cached.timestamp) < CACHE_DURATION) {
-      // Log seulement une fois par minute pour éviter le spam
-      const timeSinceLastLog = now - (cached.lastLog || 0);
-      if (timeSinceLastLog > 60000) {
-        console.log('📦 Utilisation du cache (1 minute)');
-        cached.lastLog = now;
-      }
-      return res.json(cached.data);
-    }
-
     const data = await makeSorareAPICall(query, variables);
-    
-    // Mettre en cache la réponse
-    apiCallCache.set(cacheKey, {
-      data,
-      timestamp: now
-    });
     
     res.json(data);
     

@@ -363,6 +363,36 @@ export async function fetchGameWeeks(): Promise<GameWeek[]> {
   }
 }
 
+// Fonction pour optimiser les compétitions Arena (éviter les doublons)
+function optimizeArenaCompetitions(leagues: any[]): any[] {
+  const arenaMap = new Map();
+  const otherCompetitions = [];
+  
+  for (const league of leagues) {
+    const { name, rarity, division } = league;
+    
+    // Identifier les compétitions Arena
+    if (name.includes('Arena')) {
+      const key = `${name}_${rarity}`;
+      
+      // Ne garder qu'une seule instance par type de carte pour Arena
+      if (!arenaMap.has(key)) {
+        arenaMap.set(key, {
+          name,
+          rarity,
+          division: 'All' // Remplacer toutes les divisions par 'All'
+        });
+      }
+    } else {
+      // Garder toutes les autres compétitions
+      otherCompetitions.push(league);
+    }
+  }
+  
+  // Combiner les compétitions Arena optimisées avec les autres
+  return [...arenaMap.values(), ...otherCompetitions];
+}
+
 export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null> {
   try {
     const response = await fetch(SORARE_API_URL, {
@@ -445,16 +475,24 @@ export async function fetchGameWeekDetail(slug: string): Promise<GameWeek | null
     console.log('🏆 so5Leaderboards:', fixture.so5Leaderboards);
     console.log('🏆 Nombre de leaderboards:', fixture.so5Leaderboards?.length || 0);
     
+    // Créer les compétitions de base
+    const baseLeagues = fixture.so5Leaderboards?.map(leaderboard => ({
+      name: leaderboard.so5League.displayName,
+      rarity: leaderboard.rarityType,
+      division: leaderboard.division
+    })) || [];
+    
+    // Optimiser les compétitions Arena
+    const optimizedLeagues = optimizeArenaCompetitions(baseLeagues);
+    
+    console.log(`🎯 Compétitions optimisées: ${baseLeagues.length} → ${optimizedLeagues.length} (${baseLeagues.length - optimizedLeagues.length} doublons Arena supprimés)`);
+    
     const gameWeek: GameWeek = {
       slug: fixture.slug,
       state: fixture.aasmState,
       startDate,
       endDate,
-      leagues: fixture.so5Leaderboards?.map(leaderboard => ({
-        name: leaderboard.so5League.displayName,
-        rarity: leaderboard.rarityType,
-        division: leaderboard.division
-      })) || []
+      leagues: optimizedLeagues
     };
 
     console.log('🎮 GameWeek créée avec', gameWeek.leagues.length, 'compétitions');

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { fetchUserCards, getDatabaseStats, fetchGameWeeks, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
+import { fetchUserCards, getDatabaseStats, calculatePlayerPerformanceFromCard } from '../lib/sorare-api';
 import { SorareUser, CardWithPerformance, RarityFilter, PositionFilter, AgeFilter, LeagueFilter, SeasonFilter, SortField, SortDirection, PlayerPerformance, GameWeek } from '../types/sorare';
 import { SearchForm } from '../components/search-form';
 import { UserSummary } from '../components/user-summary';
@@ -22,8 +22,7 @@ const Index = () => {
   const [dbStats, setDbStats] = useState<{ cards: number; performances: number }>({ cards: 0, performances: 0 });
   
   // GameWeeks state
-  const [gameWeeks, setGameWeeks] = useState<GameWeek[]>([]);
-  const [isLoadingGameWeeks, setIsLoadingGameWeeks] = useState(false);
+  // Les GameWeeks sont maintenant hardcodées dans le composant GameWeeksSimple
   
   // Filters state
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,24 +35,8 @@ const Index = () => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   // Charger les GameWeeks au démarrage
-  useEffect(() => {
-    loadGameWeeks();
-  }, []);
-
-  const loadGameWeeks = async () => {
-    setIsLoadingGameWeeks(true);
-    try {
-      console.log('🔄 Début du chargement des GameWeeks...');
-      const gameWeeksData = await fetchGameWeeks();
-      console.log('✅ GameWeeks chargées:', gameWeeksData.length, gameWeeksData);
-      setGameWeeks(gameWeeksData);
-    } catch (error) {
-      console.error('❌ Erreur lors du chargement des GameWeeks:', error);
-    } finally {
-      setIsLoadingGameWeeks(false);
-      console.log('🏁 Fin du chargement des GameWeeks');
-    }
-  };
+  // Les GameWeeks sont maintenant hardcodées dans le composant GameWeeksSimple
+  // Pas besoin d'appel API ni de useEffect
 
   const handleSearch = async (slug: string) => {
     setIsLoading(true);
@@ -284,17 +267,12 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-apple opacity-20"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center">
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 text-black">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-black">
               Ton Coach IA - Sorare
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-6">
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Analysez vos cartes Sorare et optimisez votre stratégie fantasy football
             </p>
-            {dbStats.cards > 0 && (
-              <div className="mt-8 text-sm text-white/70 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 inline-block border border-white/20">
-                💾 {dbStats.cards} cartes sauvegardées • {dbStats.performances} performances calculées
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -332,9 +310,9 @@ const Index = () => {
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-foreground">GameWeeks</h2>
             <GameWeeksSimple 
-              gameWeeks={gameWeeks}
-              isLoading={isLoadingGameWeeks}
-              onRefresh={loadGameWeeks}
+              gameWeeks={[]}
+              isLoading={false}
+              onRefresh={() => console.log('🔄 Actualisation des GameWeeks hardcodées')}
             />
           </div>
 
@@ -342,7 +320,7 @@ const Index = () => {
            {user && (
              <div className="space-y-6">
                <h2 className="text-3xl font-bold text-foreground">Mon Coach</h2>
-               <AICoach gameWeeks={gameWeeks} />
+               <AICoach gameWeeks={[]} />
              </div>
            )}
 
