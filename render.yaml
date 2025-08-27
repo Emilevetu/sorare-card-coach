@@ -10,5 +10,5 @@ services:
         value: production
       - key: VITE_OPENAI_API_KEY
         sync: false
-    healthCheckPath: /
+    healthCheckPath: /api/health
     autoDeploy: true

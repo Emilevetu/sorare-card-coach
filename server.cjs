@@ -16,6 +16,12 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Servir les fichiers statiques du frontend (en production)
+if (process.env.NODE_ENV === 'production') {
+  // Servir les fichiers statiques depuis le dossier dist
+  app.use(express.static(path.join(__dirname, 'dist')));
+}
+
 // Initialiser la base de données
 const dbPath = path.join(__dirname, 'sorare-cards.db');
 const db = new Database(dbPath);
@@ -496,6 +502,29 @@ app.post('/api/sorare', async (req, res) => {
     }
   }
 });
+
+// Route de test pour vérifier que le serveur fonctionne
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Sorare Card Coach API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Route catch-all pour servir index.html en production (SPA routing)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    // Ne pas intercepter les routes API
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    
+    // Servir index.html pour toutes les autres routes (SPA routing)
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Serveur backend démarré sur le port ${PORT}`);
