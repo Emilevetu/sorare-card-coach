@@ -200,7 +200,7 @@ export function GameWeeksSimple({ gameWeeks, isLoading, onRefresh }: GameWeeksSi
                         ? filterNonCommonLeagues(gameWeek.leagues) 
                         : filterNonCommonLeagues(gameWeek.leagues).slice(0, 5)
                       ).map((league: { name: string; rarity: string; division?: string }, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div key={index} className="flex items-center justify-between p-1 bg-blue-50 border border-blue-200 rounded-lg">
                           <div className="flex items-center gap-2">
                             <Users className="w-3 h-3 text-muted-foreground" />
                             <span className="text-sm font-medium">{league.name}</span>

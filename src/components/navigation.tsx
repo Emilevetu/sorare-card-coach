@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Home, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SorareLogo } from './sorare-logo';
 
 interface NavigationProps {
   currentPage: 'home' | 'rules';
@@ -12,7 +13,7 @@ export function Navigation({ currentPage }: NavigationProps) {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-bold text-sorare-blue">Coach IA Sorare</h1>
+            <SorareLogo size="md" className="text-black" />
           </div>
           
           <div className="flex items-center space-x-2">
