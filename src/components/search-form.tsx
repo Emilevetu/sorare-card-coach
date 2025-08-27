@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Loader2, LogOut } from 'lucide-react';
@@ -12,14 +12,6 @@ interface SearchFormProps {
 
 export function SearchForm({ onSearch, onLogout, isLoading, currentUser }: SearchFormProps) {
   const [slug, setSlug] = useState('');
-
-  // Restaurer le slug depuis localStorage au chargement
-  useEffect(() => {
-    const savedSlug = localStorage.getItem('sorare_user_slug');
-    if (savedSlug) {
-      setSlug(savedSlug);
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
