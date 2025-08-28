@@ -199,6 +199,10 @@ export async function callOpenAI(
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 
       (window.location.hostname === 'localhost' ? 'http://localhost:3001' : window.location.origin);
     
+    console.log('🤖 VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
+    console.log('🤖 Hostname:', window.location.hostname);
+    console.log('🤖 Origin:', window.location.origin);
+    console.log('🤖 BACKEND_URL calculé:', BACKEND_URL);
     console.log('🤖 Appel OpenAI vers:', `${BACKEND_URL}/api/openai`);
     
     const response = await fetch(`${BACKEND_URL}/api/openai`, {

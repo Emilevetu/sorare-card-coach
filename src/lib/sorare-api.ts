@@ -6,11 +6,11 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
 const SORARE_API_URL = `${BACKEND_URL}/api/sorare`;
 
 // Debug: afficher l'URL utilisée
-console.log('🔗 URL Backend utilisée:', BACKEND_URL);
-console.log('🔗 URL API Sorare:', SORARE_API_URL);
+console.log('🔗 VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
 console.log('🔗 Hostname:', window.location.hostname);
 console.log('🔗 Origin:', window.location.origin);
-console.log('🔗 VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
+console.log('🔗 BACKEND_URL calculé:', BACKEND_URL);
+console.log('🔗 URL API Sorare:', SORARE_API_URL);
 
 const CARDS_QUERY = `
   query MyCards($slug: String!, $first: Int!, $after: String) {
