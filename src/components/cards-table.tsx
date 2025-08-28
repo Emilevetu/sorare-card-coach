@@ -281,6 +281,7 @@ export function CardsTable({
                 onSort={onSortChange}
                 className="text-center"
               />
+              <TableHead className="font-semibold text-foreground py-4 text-center">Prochain Match</TableHead>
 
             </TableRow>
           </TableHeader>
@@ -324,6 +325,39 @@ export function CardsTable({
                     </span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {card.player.nextGame ? (
+                    <div className="text-sm">
+                      {(() => {
+                        const playerClub = card.player.activeClub?.name;
+                        const homeTeam = card.player.nextGame.homeTeam.name;
+                        const awayTeam = card.player.nextGame.awayTeam.name;
+                        
+                        if (playerClub === homeTeam) {
+                          return (
+                            <span className="text-blue-600 font-medium">
+                              vs {awayTeam} (D)
+                            </span>
+                          );
+                        } else if (playerClub === awayTeam) {
+                          return (
+                            <span className="text-orange-600 font-medium">
+                              vs {homeTeam} (E)
+                            </span>
+                          );
+                        } else {
+                          return (
+                            <span className="text-muted-foreground">
+                              {homeTeam} vs {awayTeam}
+                            </span>
+                          );
+                        }
+                      })()}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">—</span>
                   )}
                 </TableCell>
               </TableRow>

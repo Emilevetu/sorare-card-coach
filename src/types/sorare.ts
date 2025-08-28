@@ -2,6 +2,16 @@ export interface GameScore {
   score: number;
 }
 
+export interface NextGame {
+  id: string;
+  awayTeam: {
+    name: string;
+  };
+  homeTeam: {
+    name: string;
+  };
+}
+
 export interface SorarePlayer {
   id: string;
   slug: string;
@@ -21,6 +31,7 @@ export interface SorarePlayer {
   };
   u23Eligible: boolean;
   rawPlayerGameScores?: number[];
+  nextGame?: NextGame;
 }
 
 export interface SorareCard {
