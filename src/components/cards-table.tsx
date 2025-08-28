@@ -437,14 +437,15 @@ const MiniScoreChart = ({ scores }: { scores: number[] }) => {
     return <span className="text-muted-foreground text-xs">—</span>;
   }
 
-  const maxScore = Math.max(...scores);
-  const minScore = Math.min(...scores);
-  const range = maxScore - minScore || 1; // Éviter division par zéro
+  // Échelle fixe de 0 à 100 pour une comparaison équitable
+  const MAX_SCORE = 100;
+  const MAX_HEIGHT = 16; // Hauteur maximale en pixels
 
   return (
     <div className="flex items-end justify-center space-x-0.5 h-6">
       {scores.map((score, index) => {
-        const height = maxScore > 0 ? (score / maxScore) * 16 : 0; // Hauteur max 16px
+        // Calcul de la hauteur basé sur l'échelle 0-100
+        const height = Math.min(score / MAX_SCORE * MAX_HEIGHT, MAX_HEIGHT);
         const color = score >= 60 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500';
         
         return (

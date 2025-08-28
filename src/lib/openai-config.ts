@@ -30,6 +30,14 @@ Pour chaque joueurs que tu proposes :
 - donne son club
 - donne sa note L15 -> L15 : sa note
 - le nombre qu'il a joué sur les 15 derniers matchs -> *Nombre de matchs joués sur les 15 derniers matchs* /15 matchs joués
+fais attention à ces deux bonus, fais des calculs pour satisfaire ces bonus si il est mieux de volontairement ne pas faire un bonus ou les 2 dis pourquoi et justifie ta réponse: 
+- bonus de +4% sur le score total de ta composition si la somme des scores L15 des joueurs reste strictement inférieure ou égale à :
+  - 260 pour les compositions sur 5 joueurs (In‑Season / Classic)
+  - 370 pour les compétitions Classic en SO7 (7 joueurs)
+- bonus de +2% si ta composition contient au maximum deux joueurs du même club.
+Dis toujours si on a les bonus ou pas. si on ne les a pas, dis pourquoi et propose des actions pour les avoir. exmple : acheter un défenseur de ligue 1 qui n'est pas au PSG pour avoir le bonus multi-club.
+Mets toujours la somme des scores L15 des joueurs que tu mets et dis si on a le bonus ou pas.
+
 
 Les 2 infos les plus importantes sur les joueurs sont : DNP% et L15.
 
