@@ -18,8 +18,19 @@ const PORT = process.env.PORT || 3001;
 
 console.log('🔧 Configuration des middlewares...');
 
+// Configuration CORS plus permissive pour Safari et autres navigateurs
+app.use(cors({
+  origin: [
+    'http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082', 'http://localhost:8083', 
+    'http://localhost:3000', 'http://localhost:5173',
+    'https://sorare-card-coach.onrender.com', 'https://www.sorare-card-coach.onrender.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 console.log('✅ Middlewares configurés');
@@ -507,6 +518,12 @@ console.log('🔧 Configuration des endpoints API...');
 
 // Endpoint pour l'API Sorare
 app.post('/api/sorare', async (req, res) => {
+  // Headers pour améliorer la compatibilité avec Safari
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Max-Age', '86400');
+  
   try {
     const { query, variables } = req.body;
 
@@ -549,6 +566,17 @@ app.post('/api/sorare', async (req, res) => {
 
 console.log('✅ Endpoint /api/sorare configuré');
 
+// Endpoint OPTIONS pour les requêtes preflight (Safari)
+app.options('/api/sorare', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Max-Age', '86400');
+  res.status(200).send();
+});
+
+console.log('✅ Endpoint OPTIONS /api/sorare configuré');
+
 // Route de test pour vérifier que le serveur fonctionne
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -589,7 +617,8 @@ if (process.env.NODE_ENV === 'production') {
   console.log('✅ Routes de production configurées');
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Serveur backend démarré sur le port ${PORT}`);
   console.log(`📊 Base de données: ${dbPath}`);
+  console.log(`🌐 Accessible sur: http://0.0.0.0:${PORT}`);
 });

@@ -1,8 +1,16 @@
 import { SorareApiResponse, PaginatedSorareApiResponse, PlayerPerformance, GameWeeksResponse, GameWeekDetailResponse, GameWeek } from '../types/sorare';
 
 // Utilisation du serveur backend
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:3001' : window.location.origin);
 const SORARE_API_URL = `${BACKEND_URL}/api/sorare`;
+
+// Debug: afficher l'URL utilisée
+console.log('🔗 URL Backend utilisée:', BACKEND_URL);
+console.log('🔗 URL API Sorare:', SORARE_API_URL);
+console.log('🔗 Hostname:', window.location.hostname);
+console.log('🔗 Origin:', window.location.origin);
+console.log('🔗 VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
 
 const CARDS_QUERY = `
   query MyCards($slug: String!, $first: Int!, $after: String) {
@@ -106,6 +114,7 @@ export async function fetchUserCards(slug: string): Promise<SorareApiResponse['d
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(requestBody),
       });
