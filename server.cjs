@@ -266,6 +266,12 @@ app.get('/api/sorare-rules', (req, res) => {
 
 // Endpoint pour les appels OpenAI
 app.post('/api/openai', async (req, res) => {
+  // Headers pour améliorer la compatibilité avec Safari
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Max-Age', '86400');
+  
   const { userMessage, conversationHistory, systemPrompt, userCards } = req.body;
 
   try {
@@ -576,6 +582,17 @@ app.options('/api/sorare', (req, res) => {
 });
 
 console.log('✅ Endpoint OPTIONS /api/sorare configuré');
+
+// Endpoint OPTIONS pour l'API OpenAI
+app.options('/api/openai', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Max-Age', '86400');
+  res.status(200).send();
+});
+
+console.log('✅ Endpoint OPTIONS /api/openai configuré');
 
 // Route de test pour vérifier que le serveur fonctionne
 app.get('/api/health', (req, res) => {

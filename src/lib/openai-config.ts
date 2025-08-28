@@ -195,7 +195,13 @@ export async function callOpenAI(
   userCards?: UserCard[]
 ): Promise<string> {
   try {
-    const response = await fetch('http://localhost:3001/api/openai', {
+    // Utiliser la même logique que pour l'API Sorare
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 
+      (window.location.hostname === 'localhost' ? 'http://localhost:3001' : window.location.origin);
+    
+    console.log('🤖 Appel OpenAI vers:', `${BACKEND_URL}/api/openai`);
+    
+    const response = await fetch(`${BACKEND_URL}/api/openai`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -208,13 +214,16 @@ export async function callOpenAI(
     });
 
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ Erreur HTTP OpenAI:', response.status, errorText);
+      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('✅ Réponse OpenAI reçue');
     return data.response || 'Désolé, je n\'ai pas pu générer de réponse.';
   } catch (error) {
-    console.error('Erreur OpenAI:', error);
+    console.error('❌ Erreur OpenAI:', error);
     return 'Désolé, une erreur s\'est produite lors de la communication avec l\'IA.';
   }
 }
