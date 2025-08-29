@@ -30,7 +30,7 @@ export function SearchForm({ onSearch, onLogout, isLoading, currentUser }: Searc
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-2">
-            Slug Sorare
+            Slug Sorare (if you have over 200/300 cards it may break - feel free to try with Hissam's slug "hissam_")
           </label>
           <Input
             id="slug"
